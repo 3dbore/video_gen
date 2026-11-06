@@ -1,17 +1,83 @@
 // One gate per job. A job is only "done" when its gate returns no errors.
 import fs from 'node:fs';
+import { referencesOf } from './brief.mjs';
+import { colorsIn, sceneColors } from './design.mjs';
 import { CATALOG, loadTiming, projectPaths, readJson, resolveTime } from './lib.mjs';
 
 const has = (f) => fs.existsSync(f);
 const SPEC_SECTIONS = ['Pacing', 'First motion', 'Cut rhythm', 'Look', 'Sound', 'Must match'];
+const STUDIED_SECTIONS = ['Text behavior', 'Easing feel', 'Payoff', 'Things NOT to copy'];
+const MAX_RULES = 8;
 const STORY_SECTIONS = ['One point', 'Hero number', 'Beat 1', 'Beat 2', 'Beat 3'];
 
 const missingHeadings = (text, names) =>
   names.filter((n) => !new RegExp(`^##\\s+${n}\\b`, 'im').test(text)).map((n) => `Missing section "## ${n}".`);
 
-export function gateReference(p) {
+const sectionOf = (text, name) => text.match(new RegExp(`^##\\s+${name}\\b[^\\n]*\\n([\\s\\S]*?)(?=^##\\s|(?![\\s\\S]))`, 'im'))?.[1];
+
+export function gateReference(p, brief) {
   if (!has(p.spec)) return ['spec.md does not exist.'];
-  return missingHeadings(fs.readFileSync(p.spec, 'utf8'), SPEC_SECTIONS);
+  const text = fs.readFileSync(p.spec, 'utf8');
+  const errors = [...missingHeadings(text, SPEC_SECTIONS), ...gateLook(p, text)];
+  const fromFolder = has(p.references);
+  if (fromFolder || referencesOf(brief?.meta ?? {}).length) errors.push(...gateStudied(text));
+  const clips = fromFolder ? readJson(p.references).clips : Array.isArray(brief?.meta?.reference) ? referencesOf(brief.meta) : [];
+  return [...errors, ...gateClips(text, clips, fromFolder)];
+}
+
+/** A spec drawn from references explains why they work, and stays testable. */
+function gateStudied(spec) {
+  const errors = missingHeadings(spec, STUDIED_SECTIONS);
+  const rules = (sectionOf(spec, 'Must match') ?? '').split(/\r?\n/).filter((l) => /^\s*[-*]\s/.test(l)).length;
+  if (rules > MAX_RULES) errors.push(`"## Must match" has ${rules} rules, and the limit is ${MAX_RULES}. Keep the ones that matter most.`);
+  return errors;
+}
+
+/** With several references, the spec accounts for every clip and says which one, if any, sets the pace. */
+function gateClips(spec, clips, canSkip) {
+  if (!clips.length) return [];
+  const section = sectionOf(spec, 'References');
+  if (section === undefined) return ['Missing section "## References": this film has several reference clips.'];
+  const allowed = canSkip ? ['pacing', 'moment', 'skipped'] : ['pacing', 'moment'];
+  const rows = section.split(/\r?\n/).map((l) => l.split('|').map((c) => c.replace(/`/g, '').trim()));
+  const errors = [];
+  const roles = [];
+  for (const c of clips) {
+    const row = rows.find((cells) => cells[1] === c.name);
+    if (!row) { errors.push(`"## References" has no row for ${c.name}.`); continue; }
+    const role = row[2]?.toLowerCase();
+    if (!allowed.includes(role)) errors.push(`${c.name} must have the role ${allowed.join(' or ')}, not "${row[2] ?? ''}".`);
+    roles.push(role);
+  }
+  const pacing = roles.filter((r) => r === 'pacing').length;
+  if (pacing > 1) errors.push(`Only one clip can set the film's pace, but ${pacing} have the role pacing.`);
+  const clipsAreClassified = !errors.length;
+  if (clipsAreClassified && !pacing && !/\bhouse\b/i.test(sectionOf(spec, 'Pacing') ?? '')) {
+    errors.push('No clip sets the pace, so "## Pacing" must say it uses the house spec.');
+  }
+  return errors;
+}
+
+/** With a design file, the spec points to it and can't bring in colours of its own. */
+function gateLook(p, spec) {
+  if (!has(p.design)) return [];
+  const look = sectionOf(spec, 'Look');
+  if (look === undefined) return [];
+  const errors = [];
+  if (!look.includes('design.md')) errors.push('"## Look" must point to design.md, because this project has one.');
+  const allowed = colorsIn(fs.readFileSync(p.design, 'utf8'));
+  const stray = [...colorsIn(look)].filter((c) => !allowed.has(c));
+  if (stray.length) errors.push(`"## Look" has colour(s) that are not in design.md: ${stray.join(', ')}.`);
+  return errors;
+}
+
+/** Every colour in the scene's code must come from the project's design file. */
+export function gateDesign(p) {
+  if (!has(p.design)) return [];
+  const allowed = colorsIn(fs.readFileSync(p.design, 'utf8'));
+  if (!allowed.size) return ['design.md has no hex, rgb() or hsl() colours to check the scene against. Add the brand colours as hex values.'];
+  const stray = [...sceneColors(p.scene)].filter((c) => !allowed.has(c));
+  return stray.length ? [`Colour(s) in the scene that are not in design.md: ${stray.join(', ')}. Use a design.md colour. If the brand allows one of these, add it to this project's design.md.`] : [];
 }
 
 export function gateData(p, brief) {
@@ -105,6 +171,7 @@ export function gateMotion(p) {
   for (const a of allowed) text = text.split(a).join(' ');
   const stray = text.match(/\d[\d,.]*/g);
   if (stray) errors.push(`Number(s) on screen that are not from data.json: ${[...new Set(stray)].join(', ')}. Use data-figure="id", or data-allow-digits for non-data text such as a year in a source line.`);
+  errors.push(...gateDesign(p));
   return errors;
 }
 

@@ -7,5 +7,15 @@ projects/*/work/
 projects/*/stills/
 projects/*/scene/.hyperframes/
 projects/*/scene/renders/
+.hyperframes/
+
+# Other people's footage, kept out of the repository in any format
+projects/*/inputs/reference*
+references/*
+!references/README.md
+!references/urls.txt
+!references/studies/
+references/studies/*/*
+!references/studies/*/study.md
 *.mp4
 !assets/**/*.mp4

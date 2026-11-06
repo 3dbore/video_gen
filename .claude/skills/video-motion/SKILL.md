@@ -6,7 +6,7 @@ argument-hint: "<project id>"
 
 # Motion: writes `scene/index.html` and `scene/timing.js`
 
-Read `spec.md`, `story.md`, `data.json`, `brief.md`, and `voice/transcript.json` if there's a voice. Then read:
+Read `spec.md`, `story.md`, `data.json`, `brief.md`, and `voice/transcript.json` if there's a voice. If `design.md` exists, read it too: it decides colours, fonts and layout, and `spec.md` decides pacing. Then read:
 
 - `/video-design` for colour, type and layout
 - `/motion-design` for timing, easing and choreography
@@ -41,6 +41,7 @@ Read `spec.md`, `story.md`, `data.json`, `brief.md`, and `voice/transcript.json`
 - **Numbers** on screen use `data-figure="id"`. Stray digits fail the gate. Use `data-allow-digits` only for text that isn't data, such as a year in a source line.
 - **Runtime:** `runtime.js` must load after the scenes and before the timeline.
 - **Deterministic:** no `Date.now()`, unseeded `Math.random()`, network requests or CSS animations that aren't driven by the timeline.
+- **Colours:** with a `design.md`, every colour in the scene's code must be in it, or the gate fails. Transparency is fine, and "#FFB000 at 40%" counts as `#FFB000`. A scene can use `design.md` colours only. To allow another one, ask the person, then add it to this project's `design.md`, not `brand/DESIGN.md`.
 - **Local assets:** put fonts and images in `scene/`. Use `@font-face` with a local file, or a font that's on the system.
 
 ## timing.js
@@ -59,6 +60,8 @@ Set `beat` from the spec's pacing. Place cues on word times from the transcript 
 ## Craft
 
 - The film must match `spec.md`: first motion, shot lengths and cut rhythm.
+- If `spec.md` has `## References`, build each `moment` row at the place it names, using its measured timing. Apply it only there. Ignore `skipped` rows. Take the technique, never the clip's footage, characters or branding.
+- If `spec.md` has `## Text behavior`, `## Easing feel` and `## Payoff`, follow them, and don't use anything under `## Things NOT to copy`.
 - The hero number is the largest thing in the film, with the longest hold.
 - Each scene needs a next action. Avoid long stretches where nothing changes.
 - Respect safe areas. Vertical video needs extra room at the top and bottom for platform UI.

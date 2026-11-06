@@ -12,7 +12,7 @@ description: Visual design for videos - colour by act, type scale, chart and lay
 > | `qc.py --layout`, `qc.py --render` | `node tools/video.mjs stills <id>`, which runs `hyperframes check` |
 > | `tools/contact_sheet.py` | `stills/` from the same command |
 > | `project.json` | `spec.md`, under `## Look` |
-> | `design.md` | The `## Look` section of `spec.md`, or `projects/<id>/design.md` if it needs more room |
+> | `design.md` | `projects/<id>/design.md`, copied from `brand/DESIGN.md` or the brief's `brand.design` when the project is created. Its brand values are fixed: add the film's acts and fields below them, under `## This film`, and never rewrite them. With no such file, use the `## Look` section of `spec.md`, or create `projects/<id>/design.md` if it needs more room |
 > | `cue()` | `cue("name")` from `scene/timing.js` |
 > | `lib/components/*`, `wipe()`, `PageTurns`, `lib/transitions` | Build in HTML and GSAP, or look in `/hyperframes-registry` |
 > | `motion-craft.md` | The `/motion-design` skill |

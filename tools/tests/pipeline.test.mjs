@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseBrief } from '../brief.mjs';
+import { parseBrief, referencesOf } from '../brief.mjs';
 import { modelFollowsTags, speechRequest } from '../elevenlabs.mjs';
-import { gateMotion, gateData, visibleText } from '../gates.mjs';
+import { colorsIn, designWarnings } from '../design.mjs';
+import { gateDesign, gateMotion, gateData, gateReference, visibleText } from '../gates.mjs';
 import { buildGraph } from '../mix.mjs';
-import { loadTiming, resolveTime } from '../lib.mjs';
+import { loadTiming, referenceFolder, resolveTime } from '../lib.mjs';
 
 const VALID = `---
 brief_version: 1
@@ -125,6 +126,197 @@ test('motion gate catches a hard-coded position', () => {
 test('motion gate catches an unknown cue, scene and figure', () => {
   const errs = gateMotion(tempProject(shell('<b data-figure="nope"></b><i data-scene="zz"></i>', 'tl.to("#t",{x:1},cue("late"));')));
   for (const word of ['nope', 'zz', 'late']) assert.ok(errs.some((e) => e.includes(word)), word);
+});
+
+function brandProject(design, html = '') {
+  const p = tempProject(shell('', 'tl.to("#t",{x:1},cue("go"));') + html);
+  p.scene = path.dirname(p.index);
+  p.design = path.join(p.scene, 'design.source');
+  p.spec = path.join(p.scene, 'spec.md');
+  fs.writeFileSync(p.design, design);
+  return p;
+}
+const sectionsWith = (look) => `## Pacing\n## First motion\n## Cut rhythm\n## Look\n${look}\n## Sound\n## Must match\n`;
+
+test('colours are read as hex, rgb and hsl, ignoring transparency', () => {
+  const found = colorsIn('#FFB000 #abc #11223344 rgba(255, 0, 0, 0.5) hsl(0, 0%, 100%)');
+  assert.deepEqual([...found].sort(), ['#112233', '#aabbcc', '#ff0000', '#ffb000', '#ffffff']);
+});
+
+test('colour reading skips entities, links, words and variables', () => {
+  assert.equal(colorsIn('&#123; href="#abc" issue#123 #abcdefg').size, 0);
+  assert.deepEqual([...colorsIn('color: var(--gold); border: 1px solid', { named: true })], []);
+  assert.deepEqual([...colorsIn('the gold standard', { named: true })], []);
+  assert.deepEqual([...colorsIn('.a { color: white }', { named: true })], ['#ffffff']);
+});
+
+test('the gate accepts brand colours in any notation', () => {
+  const p = brandProject('Accent #FFB000, ink #101114', '<style>.a{color:#ffb000;background:rgba(16,17,20,.4)}</style>');
+  assert.deepEqual(gateMotion(p), []);
+});
+
+test('the gate refuses a colour that is not in the design file', () => {
+  const p = brandProject('Accent #FFB000', '<style>.a{color:#ffb000;background:#00ff00;fill:white}</style>');
+  const errs = gateMotion(p);
+  assert.ok(errs.some((e) => e.includes('#00ff00') && e.includes('#ffffff') && !e.includes('#ffb000')), errs.join());
+});
+
+test('a scene id that looks like hex is not a colour', () => {
+  const p = brandProject('Accent #FFB000', '<section id="add"></section><style>#add{color:#ffb000}</style><script>tl.from("#add .title",{y:1},cue("go"));</script>');
+  assert.deepEqual(gateMotion(p), []);
+});
+
+test('the gate checks css files beside the scene and skips libraries', () => {
+  const p = brandProject('Accent #FFB000');
+  fs.writeFileSync(path.join(p.scene, 'gsap.min.js'), 'var a="#123456";');
+  assert.deepEqual(gateDesign(p), []);
+  fs.writeFileSync(path.join(p.scene, 'look.css'), '.a{color:#123456}');
+  assert.ok(gateDesign(p).some((e) => e.includes('#123456')));
+});
+
+test('a design file without readable colours is refused, and no design file means no check', () => {
+  const p = brandProject('Use brand orange.', '<style>.a{color:#123456}</style>');
+  assert.ok(gateDesign(p).some((e) => /no hex/.test(e)));
+  assert.ok(designWarnings('Use brand orange.').some((w) => /no hex/.test(w)));
+  fs.rmSync(p.design);
+  assert.deepEqual(gateDesign(p), []);
+});
+
+test('a brief palette that disagrees with the design file gets a warning', () => {
+  assert.deepEqual(designWarnings('#FFB000', ['#ffb000']), []);
+  assert.ok(designWarnings('#FFB000', ['#123456']).some((w) => w.includes('#123456')));
+});
+
+test('with a design file, the spec look must point to it and add no colours', () => {
+  const p = brandProject('Accent #FFB000');
+  fs.writeFileSync(p.spec, sectionsWith('Dark and heavy.'));
+  assert.ok(gateReference(p).some((e) => /must point to design\.md/.test(e)));
+  fs.writeFileSync(p.spec, sectionsWith('See design.md, plus #123456.'));
+  assert.ok(gateReference(p).some((e) => e.includes('#123456')));
+  fs.writeFileSync(p.spec, sectionsWith('See design.md. Accent #FFB000.'));
+  assert.deepEqual(gateReference(p), []);
+});
+
+test('brand.design must be a Markdown file', () => {
+  const withDesign = (v) => parseBrief(VALID.replace('voice: { mode: none }', `voice: { mode: none }\nbrand: { design: ${v} }`));
+  assert.ok(withDesign('look.pdf').errors.some((e) => /brand\.design/.test(e)));
+  assert.deepEqual(withDesign('../../brand/client-x.md').errors, []);
+});
+
+const withRef = (yaml) => parseBrief(VALID.replace('voice: { mode: none }', `voice: { mode: none }\n${yaml}`));
+const TWO_CLIPS = 'reference:\n  - { file: a.mp4, why: pace }\n  - { url: "https://example.org/b", why: the slam }';
+
+test('one reference and a list of clips are both valid, and get their names', () => {
+  const one = withRef('reference: { url: "https://example.org/a" }');
+  assert.deepEqual(one.errors, []);
+  assert.equal(referencesOf(one.meta)[0].name, 'reference');
+  const list = withRef(TWO_CLIPS);
+  assert.deepEqual(list.errors, []);
+  assert.deepEqual(referencesOf(list.meta).map((c) => c.name), ['reference-1', 'reference-2']);
+  assert.ok(!list.warnings.some((w) => /house style/.test(w)));
+});
+
+test('a reference that cannot be used is refused instead of dropped', () => {
+  for (const [yaml, word] of [
+    ['reference: a.mp4', 'reference needs one of file, url or from'],
+    ['reference: { file: [a.mp4, b.mp4] }', 'reference needs one of file, url or from'],
+    ['reference: [a.mp4, b.mp4]', 'reference-1 needs one of file, url or from'],
+    ['reference:\n  - { file: a.mp4 }', 'reference-1 needs a why'],
+    ['reference:\n  - { file: a.mp4, url: "https://example.org", why: x }', 'reference-1 needs one of file, url or from'],
+    ['reference:\n  - { file: a.mp4, from: a.mp4, why: x }', 'reference-1 needs one of file, url or from'],
+    ['reference: { from: ../secret.mp4 }', 'from is a file name inside references/'],
+  ]) assert.ok(withRef(yaml).errors.some((e) => e.includes(word)), yaml);
+  assert.deepEqual(withRef('reference: { from: a.mp4 }').errors, []);
+});
+
+test('the warning says where a film with no named reference gets its clips', () => {
+  assert.ok(withRef('reference: []').warnings.some((w) => /references\/ folder/.test(w)));
+  assert.ok(parseBrief(VALID).warnings.some((w) => /references\/ folder/.test(w)));
+  assert.ok(withRef('reference: none').warnings.some((w) => /reference is none/.test(w)));
+});
+
+test('the shared folder lists videos and URLs, and ignores everything else', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'folder-'));
+  assert.deepEqual(referenceFolder(path.join(dir, 'missing')), []);
+  for (const f of ['b clip.MOV', 'a.mp4', 'README.md']) fs.writeFileSync(path.join(dir, f), '');
+  fs.mkdirSync(path.join(dir, 'studies'));
+  fs.writeFileSync(path.join(dir, 'urls.txt'), '# a note\n\nhttps://example.org/x\r\n');
+  const clips = referenceFolder(dir);
+  assert.deepEqual(clips.map((c) => c.name), ['a.mp4', 'b clip.MOV', 'link-1']);
+  assert.equal(clips[1].study, 'references/studies/b_clip_mov');
+  assert.equal(clips[2].url, 'https://example.org/x');
+  assert.match(clips[2].study, /^references\/studies\/link-[0-9a-f]{8}$/);
+  assert.equal(referenceFolder(dir)[2].study, clips[2].study);
+  fs.writeFileSync(path.join(dir, 'urls.txt'), 'not a url\n');
+  assert.throws(() => referenceFolder(dir), /not a URL/);
+});
+
+const STUDIED = '## Text behavior\n## Easing feel\n## Payoff\n## Things NOT to copy\n';
+
+function clipSpec(rows, pacing = 'From reference-1.') {
+  const p = { spec: path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ref-')), 'spec.md') };
+  const table = rows === null ? '' : `## References\n| Clip | Role | Take | Where | Measured |\n|---|---|---|---|---|\n${rows.join('\n')}\n`;
+  fs.writeFileSync(p.spec, `## Pacing\n${pacing}\n## First motion\n## Cut rhythm\n## Look\n## Sound\n## Must match\n${STUDIED}${table}`);
+  return gateReference(p, withRef(TWO_CLIPS));
+}
+
+function folderSpec({ rows, pacing = 'House spec.', rules = 3, studied = STUDIED }) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ref-'));
+  const p = { spec: path.join(dir, 'spec.md'), references: path.join(dir, 'references.json') };
+  fs.writeFileSync(p.references, JSON.stringify({ clips: [{ name: 'a.mp4' }, { name: 'link-1' }] }));
+  const table = `## References\n| Clip | Role | Take | Where | Measured |\n|---|---|---|---|---|\n${rows.join('\n')}\n`;
+  fs.writeFileSync(p.spec, `## Pacing\n${pacing}\n## First motion\n## Cut rhythm\n## Look\n## Sound\n## Must match\n${'- rule\n'.repeat(rules)}${studied}${table}`);
+  return gateReference(p, parseBrief(VALID));
+}
+
+test('a film from the folder accounts for every clip, and can skip some', () => {
+  const skipAll = ['| a.mp4 | skipped | x | | |', '| link-1 | skipped | x | | |'];
+  assert.deepEqual(folderSpec({ rows: skipAll }), []);
+  assert.deepEqual(folderSpec({ rows: ['| a.mp4 | pacing | x | Film | y |', '| link-1 | skipped | x | | |'], pacing: 'From a.mp4.' }), []);
+  assert.ok(folderSpec({ rows: ['| a.mp4 | skipped | x | | |'] }).some((e) => /no row for link-1/.test(e)));
+  assert.ok(folderSpec({ rows: skipAll, pacing: 'Fast.' }).some((e) => /house spec/.test(e)));
+});
+
+test('a spec drawn from references needs your sections and at most 8 rules', () => {
+  const rows = ['| a.mp4 | skipped | x | | |', '| link-1 | skipped | x | | |'];
+  assert.deepEqual(folderSpec({ rows, rules: 8 }), []);
+  assert.ok(folderSpec({ rows, rules: 9 }).some((e) => /has 9 rules/.test(e)));
+  const missing = folderSpec({ rows, studied: '' });
+  for (const name of ['Text behavior', 'Easing feel', 'Payoff', 'Things NOT to copy']) assert.ok(missing.some((e) => e.includes(name)), name);
+});
+
+test('skipping is only for the folder, because a listed clip was chosen on purpose', () => {
+  assert.ok(clipSpec(['| reference-1 | skipped | x | y | z |', '| reference-2 | moment | x | y | z |'], 'House.').some((e) => /skipped/.test(e)));
+});
+
+test('the spec gate passes when every clip has a role', () => {
+  assert.deepEqual(clipSpec(['| reference-1 | pacing | x | Film | y |', '| `reference-2` | Moment | x | Beat 2 | y |']), []);
+});
+
+test('the spec gate refuses a missing section, a missing clip and a bad role', () => {
+  assert.ok(clipSpec(null).some((e) => /## References/.test(e)));
+  assert.ok(clipSpec(['| reference-1 | pacing | x | Film | y |']).some((e) => /no row for reference-2/.test(e)));
+  assert.ok(clipSpec(['| reference-1 | pacing | x | Film | y |', '| reference-2 | vibes | x | y | z |']).some((e) => /vibes/.test(e)));
+});
+
+test('only one clip sets the pace, and with none the spec says house', () => {
+  assert.ok(clipSpec(['| reference-1 | pacing | x | y | z |', '| reference-2 | pacing | x | y | z |']).some((e) => /Only one/.test(e)));
+  const moments = ['| reference-1 | moment | x | y | z |', '| reference-2 | moment | x | y | z |'];
+  assert.ok(clipSpec(moments, 'Fast.').some((e) => /house spec/.test(e)));
+  assert.deepEqual(clipSpec(moments, 'House spec, because no clip can set the pace.'), []);
+});
+
+test('a brief with one reference needs no references section', () => {
+  const p = { spec: path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ref-')), 'spec.md') };
+  fs.writeFileSync(p.spec, sectionsWith('Dark.') + STUDIED);
+  assert.deepEqual(gateReference(p, withRef('reference: { file: a.mp4 }')), []);
+});
+
+test('a house-style film needs none of the study sections', () => {
+  const p = { spec: path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'ref-')), 'spec.md') };
+  fs.writeFileSync(p.spec, sectionsWith('Dark.'));
+  assert.deepEqual(gateReference(p, parseBrief(VALID)), []);
+  assert.deepEqual(gateReference(p, withRef('reference: none')), []);
 });
 
 test('visible text ignores head, script and allowed digits', () => {

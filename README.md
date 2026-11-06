@@ -34,6 +34,8 @@ The machine needs Node 22+, FFmpeg and yt-dlp. Add `ELEVENLABS_API_KEY` to `.env
 |---|---|
 | `briefs/inbox/` | Briefs waiting to start |
 | `briefs/archive/` | Briefs already started |
+| `brand/DESIGN.md` | Your brand's look, copied into every new project. See [brand/README.md](brand/README.md) |
+| `references/` | Every reference video, plus `urls.txt` for links. Used by any brief that names no reference. See [references/README.md](references/README.md) |
 | `projects/<id>/` | Everything for one video |
 | `assets/sfx/` | 770 sound effects and `catalog.json`, with a licence per sound |
 | `templates/scene/` | The starting HyperFrames composition |

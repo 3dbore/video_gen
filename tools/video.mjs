@@ -5,13 +5,14 @@ import os from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { parseBrief } from './brief.mjs';
+import { parseBrief, referencesOf } from './brief.mjs';
+import { designWarnings } from './design.mjs';
 import { DEFAULT_MODEL, hasAudioTags, modelFollowsTags, speechRequest } from './elevenlabs.mjs';
 import { GATES, runGate } from './gates.mjs';
 import { measureLufs, mix, mux } from './mix.mjs';
 import {
-  CATALOG, DIMENSIONS, ROOT, hashPaths, hf, loadEnv, loadTiming, probe, projectPaths,
-  readJson, resolveTime, run, slugify, writeJson,
+  BRAND_DESIGN, CATALOG, DIMENSIONS, REFERENCES, ROOT, hashPaths, hf, loadEnv, loadTiming, probe, projectPaths,
+  readJson, referenceFolder, resolveTime, run, slugify, writeJson,
 } from './lib.mjs';
 
 loadEnv();
@@ -114,11 +115,20 @@ function cmdNew(file, flags) {
 
   const briefDir = path.dirname(path.resolve(file));
   const attachments = {
-    reference: b.meta.reference?.file,
+    ...Object.fromEntries(referencesOf(b.meta).map((c) => [c.name, c.file])),
     voice: b.meta.voice?.file,
     music: b.meta.sound?.music && b.meta.sound.music !== 'none' ? b.meta.sound.music : null,
     logo: b.meta.brand?.logo,
   };
+  for (const c of referencesOf(b.meta)) {
+    if (c.from && !fs.existsSync(path.join(REFERENCES, c.from))) fail(`${c.name} names a file that is not in references/: ${c.from}`);
+  }
+  // A brief that names no reference draws on the shared folder.
+  const namesNone = b.meta.reference === 'none' || referencesOf(b.meta).length > 0;
+  let folderClips = [];
+  if (!namesNone) {
+    try { folderClips = referenceFolder(); } catch (e) { fail(e.message); }
+  }
   const resolved = {};
   for (const [k, rel] of Object.entries(attachments)) {
     if (!rel) continue;
@@ -126,6 +136,10 @@ function cmdNew(file, flags) {
     if (!fs.existsSync(src)) fail(`The brief points to a file that does not exist: ${rel}`);
     resolved[k] = { src, name: `${k}${path.extname(src)}` };
   }
+  // A brief can name its own design file. Otherwise every film starts from the master brand file.
+  const designRel = b.meta.brand?.design;
+  const designSrc = designRel ? path.resolve(briefDir, designRel) : fs.existsSync(BRAND_DESIGN) ? BRAND_DESIGN : null;
+  if (designRel && !fs.existsSync(designSrc)) fail(`The brief points to a file that does not exist: ${designRel}`);
   fs.mkdirSync(p.inputs, { recursive: true });
   fs.mkdirSync(p.voiceDir, { recursive: true });
   fs.writeFileSync(p.brief, text);
@@ -134,8 +148,17 @@ function cmdNew(file, flags) {
     fs.copyFileSync(v.src, path.join(p.inputs, v.name));
     inputs[k] = `inputs/${v.name}`;
   }
+  let design = null;
+  if (designSrc) {
+    // A copy, so changing the brand later doesn't change a film that's already made.
+    fs.copyFileSync(designSrc, p.design);
+    design = path.relative(ROOT, designSrc).replaceAll('\\', '/');
+    for (const w of designWarnings(fs.readFileSync(p.design, 'utf8'), b.meta.brand?.palette)) console.log(`  warning: ${w}`);
+  }
+  // A list rather than copies: the videos stay in one place, and clips added later don't change this film.
+  if (folderClips.length) writeJson(p.references, { clips: folderClips });
   scaffoldScene(p, b);
-  saveState(slug, { slug, created: new Date().toISOString(), inputs, jobs: {}, approval: null });
+  saveState(slug, { slug, created: new Date().toISOString(), inputs, design, jobs: {}, approval: null });
   if (!flags.keep && path.resolve(file).startsWith(path.join(ROOT, 'briefs', 'inbox'))) {
     const dest = path.join(ROOT, 'briefs', 'archive', `${slug}.md`);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -186,6 +209,10 @@ function cmdStatus(slug) {
   }
   const st = jobStatus(slug, loadBrief(slug));
   const state = loadState(slug);
+  const hasDesign = fs.existsSync(projectPaths(slug).design);
+  console.log(`  ${'design'.padEnd(10)} ${hasDesign ? `design.md${state.design ? ` (from ${state.design})` : ''}` : 'none, so the house look applies'}`);
+  const folder = fs.existsSync(projectPaths(slug).references) ? readJson(projectPaths(slug).references).clips.length : 0;
+  if (folder) console.log(`  ${'clips'.padEnd(10)} ${folder} from the references/ folder (references.json)`);
   for (const j of JOB_ORDER) console.log(`  ${j.padEnd(10)} ${st[j]}`);
   console.log(`  ${'direct'.padEnd(10)} open until approved (notes change scene/timing.js)`);
   const p = projectPaths(slug);
@@ -435,6 +462,11 @@ function cmdDoctor() {
   }
   const hfv = fs.existsSync(path.join(ROOT, 'node_modules', 'hyperframes')) ? readJson(path.join(ROOT, 'node_modules', 'hyperframes', 'package.json')).version : null;
   line(!!hfv, 'hyperframes', hfv || 'run npm install');
+  line(true, 'brand file', fs.existsSync(BRAND_DESIGN) ? 'brand/DESIGN.md is copied into new projects' : 'none in brand/DESIGN.md, so new films use the house look');
+  try {
+    const clips = referenceFolder();
+    line(true, 'references', clips.length ? `${clips.length} clip(s) in references/ for briefs that name none` : 'references/ is empty, so briefs that name none use the house style');
+  } catch (e) { line(false, 'references', e.message); }
   const models = hfv ? hf(['models', 'list', '--json'], { capture: true }) : null;
   const parakeet = models?.status === 0 && /parakeet/i.test(models.stdout) && /"installed":\s*true/.test(models.stdout);
   line(parakeet, 'parakeet', parakeet ? 'installed' : 'run: npx hyperframes models install parakeet');

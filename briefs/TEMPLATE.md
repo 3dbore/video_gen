@@ -12,9 +12,14 @@ platform: YouTube
 language: en            # two-letter code of the narration: en, id, fr...
 one_point: The single idea, in one sentence
 hero_number: main_figure   # delete if data.mode is none
+# With no reference here, the film draws on everything in references/.
+# reference: none           # use the house style instead
+# To choose the clips yourself, list them. Each one needs a why:
 # reference:
-#   url: https://...
-#   why: What to take from it
+#   - from: fast-cuts.mp4   # a file in references/. Or file: a path relative to this file. Or url: https://...
+#     why: The overall pace, with one idea per cut
+#   - from: number-slam.mp4
+#     why: How the hero number slams in during Beat 2
 data:
   mode: provided        # provided, research or none
   figures:
@@ -36,9 +41,10 @@ sound:
   # music_license: Who licensed it, and on what terms
   sfx: subtle           # none, subtle or expressive
   license_policy: cc0-only   # cc0-only or attribution-ok
-# brand:
-#   palette: ["#101114", "#F4F2EC", "#FFB000"]
-#   fonts: ["Inter"]
+# brand:                 # brand/DESIGN.md applies to every film. Set these only to differ.
+#   design: ../../brand/client-x.md   # this film's own design file, relative to this file
+#   palette: ["#101114", "#F4F2EC", "#FFB000"]   # ignored when the film has a design file
+#   fonts: ["Inter"]     # ignored when the film has a design file
 #   logo: logo.png
 ---
 

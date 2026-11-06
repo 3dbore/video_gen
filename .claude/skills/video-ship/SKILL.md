@@ -20,9 +20,10 @@ This runs every gate and `hyperframes check`, then writes `stills/` and `checks.
 
 Open the images in `stills/` with Read, including the review sheet and the phone sheets if present. Check each of these and write down what you find:
 
-- **Spec:** each statement under `## Must match` in `spec.md`. Say which you could confirm from stills and which need the draft.
+- **Spec:** each statement under `## Must match` in `spec.md`. Say which you could confirm from stills and which need the draft. Also check that nothing under `## Things NOT to copy` appears, if the spec has that section.
 - **Data:** read every number on screen and compare it with `data.json`, character by character.
 - **Brief:** every item under `Must include` and `Must avoid`.
+- **Brand:** if the project has `design.md`, compare fonts, layout and logo use with it. The gate only checks colours in the code, so also look at colours inside images and video.
 - **Craft:** use `/video-design` `critique.md`. Look for cut-off text, overlaps, empty frames, and small text on the phone sheet.
 
 Fix what you find, and run stills again. Three rounds at most before you bring the remaining questions to the person.

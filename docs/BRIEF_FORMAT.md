@@ -103,8 +103,10 @@ MOTION: Panels pop on house by house
 | `language` | no | Two-letter language code such as `en`, `id` or `fr`, default `en`. Used for the voice and the transcript |
 | `one_point` | yes | The single idea, in one sentence |
 | `hero_number` | if there is data | The `id` of the one figure the video is built around |
-| `reference.url` or `.file` | no | A video to match. Omit for the house style |
+| `reference` | no | Omit to draw on the shared `references/` folder. Set to `none` for the house style |
+| `reference.url`, `.file` or `.from` | no | One video to match: a URL, a path relative to the brief, or a file name in `references/` |
 | `reference.why` | no | What to take from it |
+| `reference[]` | no | Instead of the above, a list of clips. Each needs `url`, `file` or `from`, and `why`. See [Several reference clips](#several-reference-clips) |
 | `data.mode` | yes | `provided`, `research` or `none` |
 | `data.figures[]` | for `provided` | `id`, `display`, `label`, `source_url` or `source_file`, `source_title`, optional `value`, `quote` |
 | `data.questions[]` | for `research` | What to find out. Claude finds the sources |
@@ -118,7 +120,9 @@ MOTION: Panels pop on house by house
 | `sound.music` | no | `none`, or a path relative to the brief. A file needs `sound.music_license` |
 | `sound.sfx` | yes | `none`, `subtle` or `expressive` |
 | `sound.license_policy` | yes | `cc0-only`, or `attribution-ok` (allows CC-BY sounds and adds credits) |
-| `brand.palette`, `.fonts`, `.logo` | no | Colours, font names, logo path relative to the brief |
+| `brand.design` | no | Path relative to the brief of a Markdown design file for this film only. Replaces `brand/DESIGN.md`. Don't save it in `briefs/inbox/` |
+| `brand.palette`, `.fonts` | no | Colours and font names. Used only when the film has no design file, which otherwise wins |
+| `brand.logo` | no | Logo path relative to the brief |
 
 ## Beats
 
@@ -136,6 +140,28 @@ SOUND: What it sounds like, in plain words.
 Each beat needs `VO:` or `ON SCREEN:`. Beats must be numbered in order. If the lengths don't add up to `duration_s`, they are scaled to fit and you get a warning.
 
 A brief can have any number of beats. The story job still reduces the argument to three story beats, so a brief with six scenes needs a clear shape.
+
+## Several reference clips
+
+You usually don't need to write anything here. Leave out `reference`, and the film draws on every video in the shared `references/` folder, using what suits it. See [references/README.md](../references/README.md).
+
+To say exactly what to take from which video, list clips instead. A few seconds each is fine. Use `from` for a file in `references/`, and the film then uses only the clips you list.
+
+```yaml
+reference:
+  - from: fast-cuts.mp4
+    why: The overall pace, with one idea per cut
+  - from: number-slam.mp4
+    why: How the hero number slams in during Beat 2
+  - url: https://example.com/a-transition-we-like
+    why: The wipe between Beat 2 and Beat 3
+```
+
+**Say exactly what to take in each `why`.** It's required, and it decides how the clip is used. Name the beat if you know it. "How the number lands in Beat 2" is good. "Nice energy" is not.
+
+**Only one clip can set the film's pace.** Its `why` must ask for pace, and it needs at least 3 cuts, so a clip of a few seconds usually can't do this. Every other clip supplies one technique for one place in the film. If no clip can set the pace, the film uses the house pacing, and `spec.md` says so.
+
+Clips give pacing and technique only, never footage, characters, branding or music. If the film has a brand design file, that file decides the look.
 
 ## Intonation and language
 

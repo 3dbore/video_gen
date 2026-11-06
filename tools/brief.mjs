@@ -45,6 +45,17 @@ function parseBody(body) {
   return { beats, sections };
 }
 
+/**
+ * A brief names one reference or a list of them. Returns them in order, each with the `name`
+ * it has in inputs/ and in spec.md: "reference" for one, "reference-1", "reference-2" for a list.
+ */
+export function referencesOf(meta) {
+  const r = meta.reference;
+  if (!r || r === 'none') return [];
+  const list = Array.isArray(r);
+  return (list ? r : [r]).map((c, i) => ({ ...(c && typeof c === 'object' ? c : {}), name: list ? `reference-${i + 1}` : 'reference' }));
+}
+
 /** Returns { meta, beats, sections, errors, warnings }. Never throws on bad input. */
 export function parseBrief(text) {
   const errors = [];
@@ -111,6 +122,8 @@ export function parseBrief(text) {
   need(['cc0-only', 'attribution-ok'].includes(sound.license_policy), 'sound.license_policy must be cc0-only or attribution-ok.');
   if (sound.music && sound.music !== 'none') need(sound.music_license, 'A music file needs sound.music_license.');
 
+  if (meta.brand?.design !== undefined) need(/\.md$/i.test(String(meta.brand.design)), 'brand.design must be the path of a Markdown file, relative to the brief.');
+
   need(beats.length > 0, 'Add at least one "## Beat 1: Name (5s)" section.');
   beats.forEach((b, i) => {
     need(b.n === i + 1, `Beats must be numbered in order (found Beat ${b.n} at position ${i + 1}).`);
@@ -129,7 +142,15 @@ export function parseBrief(text) {
     warnings.push(`Beats add up to ${total}s but format.duration_s is ${fmt.duration_s}s.`);
   }
   if (voice.mode === 'none' && beats.some((b) => b.vo)) warnings.push('voice.mode is none, so VO lines will not be spoken.');
-  if (!meta.reference || meta.reference === 'none') warnings.push('No reference video, so the spec job will use the house style.');
+  const references = referencesOf(meta);
+  for (const c of references) {
+    const sources = [c.file, c.url, c.from].filter((v) => typeof v === 'string' && v);
+    need(sources.length === 1, `${c.name} needs one of file, url or from, written once as plain text.`);
+    if (typeof c.from === 'string') need(!/[\\/]/.test(c.from), `${c.name}: from is a file name inside references/, not a path.`);
+    if (Array.isArray(meta.reference)) need(typeof c.why === 'string' && c.why.trim(), `${c.name} needs a why: what to take from this clip.`);
+  }
+  if (meta.reference === 'none') warnings.push('reference is none, so the spec job will use the house style.');
+  else if (!references.length) warnings.push('The brief names no reference, so the film draws on the references/ folder, or the house style if that is empty.');
 
   return { meta, beats, sections, errors, warnings };
 }

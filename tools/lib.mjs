@@ -8,6 +8,29 @@ import { fileURLToPath } from 'node:url';
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const CATALOG = path.join(ROOT, 'assets', 'sfx', 'catalog.json');
+export const BRAND_DESIGN = path.join(ROOT, 'brand', 'DESIGN.md');
+export const REFERENCES = path.join(ROOT, 'references');
+const VIDEO_FILE = /\.(mp4|mov|webm|mkv|m4v|avi)$/i;
+
+/**
+ * Everything in the shared reference folder: its video files, then the lines of urls.txt.
+ * Each clip names the folder where its one study is kept, so a video is only studied once.
+ */
+export function referenceFolder(dir = REFERENCES) {
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isFile() && VIDEO_FILE.test(e.name))
+    .map((e) => e.name).sort()
+    .map((name) => ({ name, file: `references/${name}`, study: `references/studies/${slugify(name)}` }));
+  const urlsFile = path.join(dir, 'urls.txt');
+  const lines = fs.existsSync(urlsFile) ? fs.readFileSync(urlsFile, 'utf8').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith('#')) : [];
+  const links = lines.map((url, i) => {
+    if (!/^https?:\/\//i.test(url)) throw new Error(`references/urls.txt: "${url}" is not a URL. Put one URL per line, and start notes with #.`);
+    const id = crypto.createHash('sha1').update(url).digest('hex').slice(0, 8);
+    return { name: `link-${i + 1}`, url, study: `references/studies/link-${id}` };
+  });
+  return [...files, ...links];
+}
 
 export const DIMENSIONS = {
   '16:9': [1920, 1080],
@@ -25,6 +48,8 @@ export function projectPaths(slug) {
     brief: path.join(dir, 'brief.md'),
     state: path.join(dir, 'state.json'),
     inputs: path.join(dir, 'inputs'),
+    design: path.join(dir, 'design.md'),
+    references: path.join(dir, 'references.json'),
     spec: path.join(dir, 'spec.md'),
     data: path.join(dir, 'data.json'),
     story: path.join(dir, 'story.md'),
