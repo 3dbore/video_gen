@@ -2,7 +2,7 @@
 // Picture is never touched, so a sound note costs seconds rather than a re-render.
 import fs from 'node:fs';
 import path from 'node:path';
-import { CATALOG, ROOT, loadTiming, projectPaths, readJson, resolveTime, run } from './lib.mjs';
+import { CATALOG, ROOT, loadTiming, probe, projectPaths, readJson, resolveTime, run } from './lib.mjs';
 
 const TARGET = { i: -14, tp: -1.5, lra: 11 };
 
@@ -66,10 +66,11 @@ export function buildGraph(sound, timing, resolveFile) {
   if (!buses.length) {
     return { inputs: ['-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo'], graph: `[0:a]atrim=0:${dur}[bus]`, hasBed: false };
   }
-  const tail = `apad=whole_dur=${dur},atrim=0:${dur}[bus]`;
-  const mix = buses.length > 1
-    ? `${buses.join('')}amix=inputs=${buses.length}:normalize=0:duration=longest,${tail}`
-    : `${buses[0]}${tail}`;
+  // A silent track of exactly the film's length sets the length of the mix.
+  // apad=whole_dur was tried here and intermittently stopped at the end of the voice.
+  inputs.push('-f', 'lavfi', '-t', String(dur), '-i', 'anullsrc=r=48000:cl=stereo');
+  const silence = `[${inputs.filter((x) => x === '-i').length - 1}:a]`;
+  const mix = `${silence}${buses.join('')}amix=inputs=${buses.length + 1}:normalize=0:duration=longest,atrim=0:${dur}[bus]`;
   return { inputs, graph: [...chains, mix].join(';'), hasBed: !!(sound.voice || sound.music) };
 }
 
@@ -103,11 +104,13 @@ export function mix(slug) {
   }
   const master = run('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', bus, '-af', af, '-c:a', 'pcm_s16le', out], { capture: true });
   if (master.status !== 0) throw new Error(`Mastering failed:\n${master.stderr}`);
+  const length = probe(out).duration;
+  if (Math.abs(length - timing.film.duration) > 0.05) throw new Error(`The mix is ${length}s long but the film is ${timing.film.duration}s.`);
   return { file: out, mastered: hasBed };
 }
 
 export function mux(picture, audio, output) {
   const r = run('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-i', picture, '-i', audio,
-    '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', output], { capture: true });
+    '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', output], { capture: true });
   if (r.status !== 0) throw new Error(`Mux failed:\n${r.stderr}`);
 }

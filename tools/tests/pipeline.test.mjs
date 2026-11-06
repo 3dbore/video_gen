@@ -121,6 +121,13 @@ test('music ducks only when there is a voice', () => {
   assert.doesNotMatch(buildGraph({ music: { file: 'm' } }, TIMING, r).graph, /sidechaincompress/);
 });
 
+test('a silent track of the film length sets the mix length', () => {
+  const g = buildGraph({ voice: { file: 'v' } }, TIMING, (f) => f);
+  assert.equal(g.inputs[g.inputs.indexOf('-t') + 1], '4');
+  assert.match(g.graph, /\[1:a\]\[v\]amix=inputs=2:normalize=0:duration=longest,atrim=0:4\[bus\]/);
+  assert.doesNotMatch(g.graph, /apad/);
+});
+
 test('a silent film still produces a valid graph', () => {
   const g = buildGraph({}, TIMING, (f) => f);
   assert.equal(g.hasBed, false);

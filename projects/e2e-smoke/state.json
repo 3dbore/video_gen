@@ -30,5 +30,9 @@
       "at": "2026-11-06T13:38:38.111Z"
     }
   },
-  "approval": null
+  "approval": {
+    "hash": "12e4cc2a9bd416e7",
+    "note": "Yes, ship it",
+    "at": "2026-11-06T13:44:09.509Z"
+  }
 }

@@ -189,7 +189,8 @@ function cmdStatus(slug) {
   const approved = state.approval && fs.existsSync(p.sound) && state.approval.hash === filmHash(p);
   console.log(`  ${'ship'.padEnd(10)} ${fs.existsSync(p.final) && approved ? 'shipped' : approved ? 'approved, run final' : state.approval ? 'approval expired: film changed' : 'not approved'}`);
   const next = JOB_ORDER.find((j) => st[j] !== 'done' && st[j] !== 'skipped');
-  console.log(`\nNext: ${next ? `/video-${next} ${slug}` : `/video-ship ${slug}`}`);
+  if (fs.existsSync(p.final) && approved) console.log(`\nShipped: ${path.relative(ROOT, p.final)}. A note on the film goes through /video-direct and needs a new approval.`);
+  else console.log(`\nNext: ${next ? `/video-${next} ${slug}` : `/video-ship ${slug}`}`);
 }
 
 function cmdDone(slug, job) {
@@ -387,24 +388,27 @@ function cmdFinal(slug) {
   if (state.approval.hash !== filmHash(p)) fail('The film changed after approval. Run stills and ask again.');
   const picture = renderPicture(slug, 'delivery');
   const { file, mastered } = mix(slug);
-  mux(picture, file, p.final);
+  // final.mp4 only appears once the checks below pass, so its existence means shipped.
+  const candidate = path.join(p.work, 'final-candidate.mp4');
+  mux(picture, file, candidate);
 
-  const info = probe(p.final);
+  const info = probe(candidate);
   const timing = loadTiming(p.timing);
   const [w, h] = DIMENSIONS[b.meta.format.aspect];
   const problems = [];
   if (info.width !== w || info.height !== h) problems.push(`Size is ${info.width}x${info.height}, brief asks ${w}x${h}.`);
   if (Math.abs(info.duration - timing.film.duration) > 0.15) problems.push(`Length is ${info.duration.toFixed(2)}s, timing.js says ${timing.film.duration}s.`);
   if (!info.hasAudio) problems.push('The file has no audio stream.');
-  const lufs = measureLufs(p.final);
+  const lufs = measureLufs(candidate);
   if (mastered && Math.abs(lufs + 14) > 1.5) problems.push(`Loudness is ${lufs} LUFS, target is -14.`);
   const mustCredit = writeCredits(slug);
   const report = { ...info, lufs, mastered, problems, shipped_at: new Date().toISOString() };
   writeJson(path.join(p.work, 'ship-report.json'), report);
   console.log(JSON.stringify(report, null, 2));
+  if (problems.length) fail(`Output checks failed, so final.mp4 was not written. The rejected file is ${path.relative(ROOT, candidate)}:\n  ${problems.join('\n  ')}`);
+  fs.renameSync(candidate, p.final);
   console.log(`\nfinal.mp4: ${path.relative(ROOT, p.final)}`);
   if (mustCredit) console.log(`${mustCredit} sound(s) require attribution: see CREDITS.md`);
-  if (problems.length) fail(`Output checks failed:\n  ${problems.join('\n  ')}`);
 }
 
 function cmdDoctor() {
