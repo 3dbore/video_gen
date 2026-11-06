@@ -8,7 +8,9 @@ import { pipeline } from 'node:stream/promises';
 import { parseBrief, referencesOf } from './brief.mjs';
 import { designWarnings } from './design.mjs';
 import { DEFAULT_MODEL, hasAudioTags, modelFollowsTags, speechRequest } from './elevenlabs.mjs';
+import { startChecklist } from './funnel.mjs';
 import { GATES, runGate } from './gates.mjs';
+import { JOB_ORDER, OUTPUTS, filmHash, isApproved, jobStatus, listProjects } from './jobs.mjs';
 import { measureLufs, mix, mux } from './mix.mjs';
 import {
   BRAND_DESIGN, CATALOG, DIMENSIONS, REFERENCES, ROOT, hashPaths, hf, loadEnv, loadTiming, probe, projectPaths,
@@ -16,16 +18,7 @@ import {
 } from './lib.mjs';
 
 loadEnv();
-const JOB_ORDER = ['reference', 'data', 'story', 'voice', 'motion', 'sound'];
-const OUTPUTS = {
-  reference: (p) => [p.spec],
-  data: (p) => [p.data],
-  story: (p) => [p.story],
-  voice: (p) => [p.voiceDir],
-  motion: (p) => [p.index],
-  sound: (p) => [p.sound],
-};
-const fail = (msg) => { console.error(`\nSTOP: ${msg}`); process.exit(1); };
+const fail =(msg) => { console.error(`\nSTOP: ${msg}`); process.exit(1); };
 const workers = () => process.env.RENDER_WORKERS || '2';
 
 function loadBrief(slug) {
@@ -33,16 +26,10 @@ function loadBrief(slug) {
   if (!fs.existsSync(p.brief)) fail(`No project "${slug}". Existing: ${listProjects().join(', ') || 'none'}`);
   return parseBrief(fs.readFileSync(p.brief, 'utf8'));
 }
-function listProjects() {
-  const d = path.join(ROOT, 'projects');
-  return fs.existsSync(d) ? fs.readdirSync(d).filter((n) => fs.existsSync(path.join(d, n, 'brief.md'))) : [];
-}
 const loadState = (slug) => readJson(projectPaths(slug).state);
 const saveState = (slug, s) => writeJson(projectPaths(slug).state, s);
 
-/** Everything that changes what the viewer sees or hears. Approval is tied to this hash. */
 const pictureHash = (p) => hashPaths([p.scene]);
-const filmHash = (p) => hashPaths([p.scene, p.sound, p.data, p.voiceDir, p.inputs]);
 
 function printBriefResult(file, b) {
   for (const w of b.warnings) console.log(`  warning: ${w}`);
@@ -176,24 +163,6 @@ function syncScene(slug) {
   fs.writeFileSync(p.dataJs, `// Generated from ../data.json by tools/video.mjs. Do not edit: change data.json.\nwindow.DATA = ${JSON.stringify({ hero: d.hero, figures }, null, 2)};\n`);
 }
 
-function jobStatus(slug, brief) {
-  const p = projectPaths(slug);
-  const state = loadState(slug);
-  const result = {};
-  let upstreamChanged = false;
-  for (const job of JOB_ORDER) {
-    const rec = state.jobs[job];
-    if (job === 'voice' && brief.meta.voice?.mode === 'none') { result[job] = 'skipped'; continue; }
-    if (!rec) { result[job] = 'pending'; continue; }
-    const changed = hashPaths(OUTPUTS[job](p)) !== rec.hash;
-    if (changed) result[job] = 'changed since done';
-    else if (upstreamChanged) result[job] = 'review: upstream changed';
-    else result[job] = 'done';
-    if (changed) upstreamChanged = true;
-  }
-  return result;
-}
-
 function cmdStatus(slug) {
   if (!slug) {
     const inbox = path.join(ROOT, 'briefs', 'inbox');
@@ -216,7 +185,7 @@ function cmdStatus(slug) {
   for (const j of JOB_ORDER) console.log(`  ${j.padEnd(10)} ${st[j]}`);
   console.log(`  ${'direct'.padEnd(10)} open until approved (notes change scene/timing.js)`);
   const p = projectPaths(slug);
-  const approved = state.approval && fs.existsSync(p.sound) && state.approval.hash === filmHash(p);
+  const approved = isApproved(p, state);
   console.log(`  ${'ship'.padEnd(10)} ${fs.existsSync(p.final) && approved ? 'shipped' : approved ? 'approved, run final' : state.approval ? 'approval expired: film changed' : 'not approved'}`);
   const next = JOB_ORDER.find((j) => st[j] !== 'done' && st[j] !== 'skipped');
   if (fs.existsSync(p.final) && approved) console.log(`\nShipped: ${path.relative(ROOT, p.final)}. A note on the film goes through /video-direct and needs a new approval.`);
@@ -507,8 +476,9 @@ try {
     case 'approve': cmdApprove(needSlug(), note); break;
     case 'final': cmdFinal(needSlug()); break;
     case 'cue-time': console.log(resolveTime(loadTiming(projectPaths(needSlug()).timing), rest[0])); break;
+    case 'checklist': await startChecklist(Number(process.env.CHECKLIST_PORT) || undefined); break;
     default:
-      console.log('Commands: doctor | check-brief <file> | new <brief> | status [slug] | sync <slug> | done <slug> <job> | voice <slug> | transcribe <audio> [out.json] | sfx <words> [--policy cc0-only] | stills <slug> | draft <slug> | approve <slug> --note "..." | final <slug>');
+      console.log('Commands: doctor | checklist | check-brief <file> | new <brief> | status [slug] | sync <slug> | done <slug> <job> | voice <slug> | transcribe <audio> [out.json] | sfx <words> [--policy cc0-only] | stills <slug> | draft <slug> | approve <slug> --note "..." | final <slug>');
   }
 } catch (e) {
   fail(e.message);

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 import { parseBrief, referencesOf } from '../brief.mjs';
@@ -9,6 +10,7 @@ import { colorsIn, designWarnings } from '../design.mjs';
 import { gateDesign, gateMotion, gateData, gateReference, visibleText } from '../gates.mjs';
 import { buildGraph } from '../mix.mjs';
 import { loadTiming, referenceFolder, resolveTime } from '../lib.mjs';
+import { createChecklistServer, funnelStatus, renderMarkdown, resolveAllowed } from '../funnel.mjs';
 
 const VALID = `---
 brief_version: 1
@@ -367,4 +369,94 @@ test('timing.js loads the way the browser reads it', () => {
   const f = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 't-')), 'timing.js');
   fs.writeFileSync(f, 'window.TIMING = { film: { duration: 1 }, scenes: {}, cues: { a: 0.5 } };');
   assert.equal(loadTiming(f).cues.a, 0.5);
+});
+
+// Checklist page
+
+test('checklist Markdown: file content cannot add tags or script links', () => {
+  const html = renderMarkdown('# Hi <script>alert(1)</script>\n\n[bad](javascript:alert(1)) [good](https://example.com) ![pic](x.png)\n\n<img src=x onerror=alert(1)>');
+  assert.ok(!html.includes('<script'));
+  assert.ok(!html.includes('<img'));
+  assert.ok(!html.includes('javascript:'));
+  assert.ok(html.includes('&lt;script&gt;'));
+  assert.ok(html.includes('<a href="https://example.com"'));
+});
+
+test('checklist Markdown: renders the shapes briefs and specs use', () => {
+  const html = renderMarkdown('---\nid: a\n---\n## Head\n\n- one\n- two\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```\ncode <b>\n```\n');
+  assert.ok(html.includes('<pre class="frontmatter">id: a</pre>'));
+  assert.ok(html.includes('<h2>Head</h2>'));
+  assert.ok(html.includes('<li>two</li>'));
+  assert.ok(html.includes('<td>2</td>'));
+  assert.ok(html.includes('<pre>code &lt;b&gt;</pre>'));
+});
+
+test('checklist paths: only the allowed folders, never .env', () => {
+  for (const bad of ['.env', 'briefs/../.env', 'briefs/..\.env', 'briefs/.env', 'tools/lib.mjs', 'node_modules/x', 'projects/a/secret.txt', 'references/x.pem', 'C:/Windows/win.ini', '', null]) {
+    assert.equal(resolveAllowed(bad), null, String(bad));
+  }
+  assert.ok(resolveAllowed('brand/DESIGN.md'));
+  assert.ok(resolveAllowed('projects/not-made-yet/spec.md'));
+});
+
+test('checklist status: says a key is set without ever carrying its value', () => {
+  const before = process.env.ELEVENLABS_API_KEY;
+  process.env.ELEVENLABS_API_KEY = 'sentinel-value-do-not-show';
+  try {
+    const status = funnelStatus(null);
+    assert.equal(status.checks.env.state, 'ok');
+    assert.equal(status.checks.env.path, undefined);
+    assert.ok(!JSON.stringify(status).includes('sentinel-value-do-not-show'));
+  } finally {
+    if (before === undefined) delete process.env.ELEVENLABS_API_KEY;
+    else process.env.ELEVENLABS_API_KEY = before;
+  }
+});
+
+test('checklist server: reads only, for this PC only', async (t) => {
+  const server = createChecklistServer();
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise((resolve) => { server.closeAllConnections(); server.close(resolve); }));
+  const { port } = server.address();
+  const url = (p) => `http://127.0.0.1:${port}${p}`;
+
+  const page = await fetch(url('/'));
+  assert.equal(page.status, 200);
+  const text = await page.text();
+  const csp = page.headers.get('content-security-policy');
+  const nonce = csp.match(/'nonce-([^']+)'/)[1];
+  assert.ok(text.includes(`<script nonce="${nonce}">`));
+  assert.ok(!text.includes('__CSP_NONCE__'));
+
+  for (const p of ['.env', 'briefs/../.env', 'briefs/%2e%2e/.env', 'tools/lib.mjs']) {
+    const res = await fetch(url(`/api/entry?path=${p}`));
+    assert.equal(res.status, 403, p);
+    const raw = await fetch(url(`/raw?path=${p}`));
+    assert.equal(raw.status, 403, p);
+  }
+  assert.equal((await fetch(url('/raw?path=brand/DESIGN.md'))).status, 403);
+  assert.equal((await fetch(url('/api/entry?path=projects/not-made-yet/spec.md'))).status, 404);
+  assert.equal((await fetch(url('/api/status'), { method: 'POST' })).status, 405);
+  assert.equal((await fetch(url('/api/status?project=not-made-yet'))).status, 404);
+
+  const wrongHost = await new Promise((resolve, reject) => {
+    http.get({ host: '127.0.0.1', port, path: '/api/status', headers: { Host: 'evil.example' } }, (res) => { res.resume(); resolve(res.statusCode); }).on('error', reject);
+  });
+  assert.equal(wrongHost, 403);
+
+  const entry = await (await fetch(url('/api/entry?path=brand/DESIGN.md'))).json();
+  assert.equal(entry.kind, 'markdown');
+  assert.ok(entry.html.length > 0);
+});
+
+test('checklist server: a video can be seeked with a byte range', async (t) => {
+  const name = `range-test-${process.pid}.mp4`;
+  const file = path.join('references', name);
+  fs.writeFileSync(file, '0123456789');
+  const server = createChecklistServer();
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise((resolve) => { fs.rmSync(file, { force: true }); server.closeAllConnections(); server.close(resolve); }));
+  const res = await fetch(`http://127.0.0.1:${server.address().port}/raw?path=references/${name}`, { headers: { Range: 'bytes=2-4' } });
+  assert.equal(res.status, 206);
+  assert.equal(await res.text(), '234');
 });

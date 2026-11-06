@@ -10,6 +10,7 @@
   "scripts": {
     "doctor": "node tools/video.mjs doctor",
     "status": "node tools/video.mjs status",
+    "checklist": "node tools/video.mjs checklist",
     "sfx:build": "node tools/build-sfx.mjs",
     "test": "node --test tools/tests/pipeline.test.mjs"
   },

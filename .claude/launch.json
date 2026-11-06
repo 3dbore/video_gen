@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "checklist",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["tools/video.mjs", "checklist"],
+      "port": 4179,
+      "url": "http://127.0.0.1:4179"
+    }
+  ]
+}

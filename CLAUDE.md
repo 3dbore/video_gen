@@ -60,6 +60,7 @@ All are `node tools/video.mjs <command>`:
 | `draft <id>` | Draft render with the real mix, for a review with sound |
 | `approve <id> --note "..."` | Records approval of exactly this film |
 | `final <id>` | Delivery render, mix and output checks. Refuses without approval |
+| `checklist` | Serves `docs/workflow.html` as a live checklist on 127.0.0.1. Read-only, and never opens `.env` |
 
 ## Machine limits
 

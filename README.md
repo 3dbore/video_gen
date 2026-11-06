@@ -42,6 +42,7 @@ The machine needs Node 22+, FFmpeg and yt-dlp. Add `ELEVENLABS_API_KEY` to `.env
 | `tools/` | The CLI behind the skills |
 | `.claude/skills/` | The pipeline skills and motion/video design skills |
 | `docs/SKILLS_LIBRARY.md` | Where to find more skills |
+| `docs/workflow.html` | The workflow on one page. Run `node tools/video.mjs checklist` to use it as a live checklist of your files |
 
 ## Stack
 

@@ -49,6 +49,7 @@
 
   --gutter: 96px;
   --band-pad: 96px;
+  --nav-h: 64px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -89,7 +90,7 @@ a { color: inherit; }
 :focus-visible { outline: 2px solid var(--bore-text-brand); outline-offset: 4px; }
 
 /* Bands */
-.band { padding: var(--band-pad) var(--gutter); scroll-margin-top: 0; }
+.band { padding: var(--band-pad) var(--gutter); scroll-margin-top: var(--nav-h); }
 .wrap { max-width: 1728px; margin: 0 auto; }
 .band-subtle { background: var(--bore-surface-subtle); }
 .band-dark {
@@ -145,9 +146,9 @@ h3 { font-size: var(--type-h3); font-weight: 700; line-height: 1.22; }
   color: var(--bore-text-on-brand);
   padding: 64px var(--gutter) 96px;
 }
+.hero { scroll-margin-top: var(--nav-h); }
 .hero .wrap { position: relative; z-index: 1; }
 .hero-top { display: flex; align-items: center; gap: 32px; margin-bottom: 128px; }
-.logo { display: block; width: 185px; height: auto; }
 .hero-title { font-size: var(--type-display); font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
 .hero-lead { font-size: var(--type-lead); line-height: 1.4; max-width: 34em; margin-top: 32px; }
 .cones { position: absolute; top: 0; right: 0; bottom: 0; width: 46%; height: 100%; }
@@ -157,11 +158,18 @@ h3 { font-size: var(--type-h3); font-weight: 700; line-height: 1.22; }
 .cones path:nth-child(4) { fill: var(--bore-device-b); }
 .cones path:nth-child(5) { fill: var(--bore-device-e); }
 
-/* Contents */
-.toc { background: var(--bore-surface-ink); padding: 24px var(--gutter); }
-.toc ul { display: flex; flex-wrap: wrap; gap: 8px 32px; max-width: 1728px; margin: 0 auto; }
-.toc a { color: var(--white); text-decoration: none; font-size: var(--type-caption); font-weight: 400; }
-.toc a:hover { color: var(--bore-text-accent); }
+/* Navbar: stays at the top of the window */
+.toc { position: sticky; top: 0; z-index: 10; background: var(--bore-surface-ink); padding: 0 var(--gutter); }
+.toc-inner { display: flex; align-items: center; gap: 48px; height: var(--nav-h); max-width: 1728px; margin: 0 auto; }
+.toc-logo { flex: none; display: block; color: var(--bore-text-accent); }
+.toc-logo svg { display: block; width: 140px; height: auto; }
+.toc ul { flex: 1; min-width: 0; display: flex; gap: 32px; padding: 8px 4px; overflow-x: auto; scrollbar-width: none; }
+.toc ul::-webkit-scrollbar { display: none; }
+.toc li { flex: none; }
+.toc ul a { color: var(--white); text-decoration: none; font-size: var(--type-caption); font-weight: 400; white-space: nowrap; }
+.toc ul a:hover, .toc ul a[aria-current] { color: var(--bore-text-accent); }
+.toc ul a[aria-current] { text-decoration: underline; text-underline-offset: 8px; text-decoration-thickness: 2px; }
+.toc :focus-visible { outline-color: var(--bore-text-accent); }
 
 /* Input to output */
 .flow { display: grid; grid-template-columns: 5fr auto 3fr auto 4fr; gap: 24px; align-items: stretch; }
@@ -255,6 +263,114 @@ strong { font-weight: 700; }
 .band-subtle .card { background: var(--bore-surface-default); }
 .flow-col-fill { grid-template-rows: auto 1fr; align-content: stretch; }
 
+/* Checklist bar */
+.checkbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px;
+  margin-bottom: 48px; padding: 16px 24px; border-radius: 16px;
+  background: var(--bore-surface-subtle);
+}
+.checkbar[hidden] { display: none; }
+.checkbar-field { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.checkbar select, .btn {
+  min-height: 40px; padding: 8px 16px; border-radius: 8px;
+  border: 1px solid var(--bore-border-default);
+  background: var(--bore-surface-default); color: var(--bore-text-primary);
+  font: inherit; font-size: var(--type-caption); font-weight: 400;
+}
+.btn { cursor: pointer; }
+.btn:hover { border-color: var(--bore-text-brand); }
+.btn[aria-pressed="true"] { background: var(--bore-surface-brand); border-color: var(--bore-surface-brand); color: var(--bore-text-on-brand); }
+.checkbar-summary { flex: 1; min-width: 200px; font-weight: 500; }
+.checkbar-time { color: var(--bore-text-secondary); }
+.offline { margin: 0 0 48px; }
+.offline[hidden] { display: none; }
+.offline .path { margin: 8px 0; }
+
+/* A status line inside a block. The whole block opens when it has something to show. */
+.check[hidden] { display: none; }
+.check-detail:empty { display: none; }
+.check { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 8px; font-size: var(--type-caption); font-weight: 400; }
+.check-detail { flex: 1; min-width: 96px; }
+.check-open {
+  display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; background: none;
+  color: inherit; font: inherit; font-weight: 500; cursor: pointer;
+}
+.check-open[hidden] { display: none; }
+.check-open svg { width: 20px; height: 20px; flex: none; }
+.check-open::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.check-open:focus-visible { outline: none; }
+.check-open:focus-visible::after { outline: 2px solid currentColor; outline-offset: 4px; }
+[data-check] { position: relative; }
+[data-check].is-openable:hover .check-open { text-decoration: underline; text-underline-offset: 4px; }
+.card.is-openable:hover { box-shadow: inset 0 0 0 2px currentColor; }
+.step.is-openable:hover .path { outline: 2px solid currentColor; }
+.tag svg { display: inline-block; width: 14px; height: 14px; margin: -2px 4px 0 -4px; vertical-align: middle; }
+.tag-quiet { box-shadow: inset 0 0 0 1px currentColor; }
+.card-accent .tag-accent { background: var(--bore-surface-ink); color: var(--white); }
+.check-block { margin: 48px 0 16px; }
+.check-block .caption { margin: 0; }
+
+/* Viewer */
+.viewer {
+  width: min(880px, 100vw); max-width: 100vw; height: 100dvh; max-height: none;
+  margin: 0 0 0 auto; padding: 0; border: 0;
+  background: var(--bore-surface-default); color: var(--bore-text-primary);
+}
+.viewer[open] { display: grid; grid-template-rows: auto 1fr; }
+.viewer::backdrop { background: var(--void-black); opacity: 0.6; }
+html:has(.viewer[open]) { overflow: hidden; }
+.viewer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 32px; background: var(--bore-surface-ink); color: var(--white); }
+.viewer-head .path { background: var(--graphite-smoke); color: var(--white); margin-top: 8px; }
+.viewer-title { font-size: var(--type-h3); font-weight: 700; line-height: 1.22; margin: 0; }
+.viewer-actions { display: flex; flex: none; gap: 8px; }
+.viewer-actions .btn { background: none; color: var(--white); border-color: var(--navy-300); }
+.viewer-actions .btn:hover { border-color: var(--white); }
+.viewer-actions .btn[hidden] { display: none; }
+.viewer-body { padding: 32px; overflow: auto; display: grid; gap: 24px; align-content: start; }
+.viewer-body > * { min-width: 0; }
+.viewer-toggle { display: flex; gap: 8px; }
+.viewer-note { padding: 16px 24px; background: var(--bore-surface-subtle); border-left: 4px solid var(--bore-surface-brand); }
+.viewer-note ul { display: grid; gap: 8px; margin-top: 8px; }
+.viewer video, .viewer img { display: block; max-width: 100%; max-height: 70vh; border-radius: 8px; }
+.viewer audio { width: 100%; }
+.viewer pre {
+  margin: 0; padding: 16px; border-radius: 8px; overflow: auto;
+  background: var(--bore-surface-subtle); color: var(--bore-text-primary);
+  font: inherit; font-size: var(--type-caption); font-weight: 400; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 2;
+}
+.file-rows { display: grid; }
+.file-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+  padding: 12px 0; border-bottom: 1px solid var(--bore-border-default);
+}
+.file-name { flex: 1; min-width: 160px; overflow-wrap: anywhere; font-weight: 400; }
+.file-link {
+  flex: 1; min-width: 160px; display: flex; align-items: center; gap: 16px;
+  padding: 0; border: 0; background: none; color: inherit; font: inherit; font-weight: 400;
+  text-align: left; cursor: pointer; overflow-wrap: anywhere;
+}
+.file-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.file-link img { width: 96px; height: 54px; object-fit: cover; flex: none; }
+.file-size { color: var(--bore-text-secondary); font-size: var(--type-caption); }
+
+/* Markdown, once read */
+.prose { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.prose > * { min-width: 0; }
+.prose h1 { font-size: var(--type-h2); font-weight: 700; line-height: 1.17; margin-top: 16px; }
+.prose h2 { font-size: var(--type-h3); font-weight: 700; line-height: 1.22; margin: 16px 0 0; }
+.prose h3, .prose h4, .prose h5, .prose h6 { font-size: var(--type-lead); font-weight: 600; line-height: 1.3; margin: 8px 0 0; }
+.prose ul, .prose ol { padding-left: 24px; display: grid; gap: 8px; }
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose code { padding: 0 8px; border-radius: 8px; background: var(--bore-surface-subtle); font-size: 0.92em; font-weight: 500; overflow-wrap: anywhere; }
+.prose a { color: var(--bore-text-brand); }
+.prose hr { width: 100%; border: 0; border-top: 1px solid var(--bore-border-default); }
+.prose blockquote { margin: 0; padding: 8px 24px; border-left: 4px solid var(--bore-surface-brand); }
+.table-scroll { overflow-x: auto; }
+.prose table { width: 100%; border-collapse: collapse; font-size: var(--type-caption); font-weight: 400; }
+.prose th, .prose td { padding: 8px 16px 8px 0; border-bottom: 1px solid var(--bore-border-default); text-align: left; vertical-align: top; }
+.prose th { font-weight: 700; }
+
 footer { background: var(--bore-surface-ink); color: var(--white); padding: 48px var(--gutter); }
 footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); font-weight: 400; }
 
@@ -275,7 +391,6 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
   :root { --gutter: 24px; --band-pad: 48px; }
   .hero { padding: 32px var(--gutter) 0; }
   .hero-top { margin-bottom: 48px; }
-  .logo { width: 148px; }
   .cones { position: static; display: block; width: calc(100% + 2 * var(--gutter)); height: 192px; margin: 48px calc(-1 * var(--gutter)) 0; }
   .heading { margin-bottom: 48px; }
   .sub { margin-top: 64px; }
@@ -285,16 +400,21 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
   .row, .row-2 { grid-template-columns: 1fr; gap: 8px; }
   .row-head { display: none; }
   .callout { padding: 16px 24px; }
-  .toc ul { gap: 8px 24px; }
+  .toc-inner { gap: 24px; }
+  .toc-logo svg { width: 104px; }
+  .toc ul { gap: 24px; }
+  .checkbar { padding: 16px; }
+  .viewer-head { padding: 16px 24px; }
+  .viewer-body { padding: 24px; }
 }
 </style>
 </head>
 <body>
 
-<header class="hero">
-  <div class="wrap">
-    <div class="hero-top">
-      <svg class="logo" viewBox="0 0 186 31" role="img" aria-label="3D BORE" fill="#DBEB42">
+<nav class="toc" aria-label="On this page">
+  <div class="toc-inner">
+    <a class="toc-logo" href="#top" aria-label="3D BORE, back to the top">
+      <svg viewBox="0 0 186 31" aria-hidden="true" fill="currentColor">
         <path d="M66.1211 29.8473V0.583606H78.8354C80.7807 0.583606 82.5038 0.861514 84.0045 1.41733C85.533 1.97314 86.728 2.79297 87.5895 3.87681C88.451 4.93286 88.8817 6.29461 88.8817 7.96206C88.8817 9.60172 88.4788 10.9774 87.6728 12.089C86.8947 13.2006 85.8248 14.0343 84.463 14.5902C86.4639 15.0626 87.9924 15.8963 89.0485 17.0913C90.1045 18.2863 90.6326 19.8287 90.6326 21.7185C90.6326 23.3304 90.2018 24.7477 89.3403 25.9705C88.5066 27.1933 87.256 28.1521 85.5885 28.8468C83.9211 29.5138 81.8229 29.8473 79.2939 29.8473H66.1211ZM72.5408 24.4698H78.9187C80.6418 24.4698 81.934 24.1641 82.7956 23.5527C83.6571 22.9413 84.0878 22.0659 84.0878 20.9265C84.0878 19.8426 83.6293 18.995 82.7122 18.3836C81.8229 17.7722 80.3778 17.4665 78.3768 17.4665H72.5408V24.4698ZM72.5408 12.6309H77.6682C79.2244 12.6309 80.3917 12.3252 81.1698 11.7138C81.9479 11.1024 82.337 10.2826 82.337 9.25433C82.337 8.1427 81.934 7.32287 81.1281 6.79485C80.35 6.23903 79.2383 5.96112 77.7932 5.96112H72.5408V12.6309Z"/>
         <path d="M109.492 30.4309C107.241 30.4309 105.17 30.0418 103.28 29.2637C101.418 28.4578 99.7788 27.3739 98.3614 26.0122C96.9719 24.6226 95.8881 23.0108 95.1099 21.1766C94.3596 19.3146 93.9844 17.3276 93.9844 15.2155C93.9844 13.1311 94.3735 11.1719 95.1516 9.3377C95.9297 7.50351 97.0136 5.89165 98.4031 4.50211C99.7927 3.08478 101.432 1.98704 103.322 1.2089C105.24 0.402966 107.324 0 109.575 0C111.798 0 113.855 0.402966 115.745 1.2089C117.634 1.98704 119.274 3.07088 120.664 4.46042C122.053 5.84996 123.137 7.46183 123.915 9.29602C124.693 11.1024 125.082 13.0478 125.082 15.1321C125.082 17.2998 124.679 19.3146 123.873 21.1766C123.095 23.0108 121.984 24.6226 120.538 26.0122C119.121 27.4017 117.468 28.4856 115.578 29.2637C113.716 30.0418 111.687 30.4309 109.492 30.4309ZM109.533 24.5115C111.284 24.5115 112.813 24.0946 114.119 23.2609C115.453 22.3994 116.481 21.2738 117.204 19.8843C117.954 18.467 118.329 16.9246 118.329 15.2571C118.329 14.0066 118.121 12.8254 117.704 11.7138C117.287 10.5744 116.676 9.58782 115.87 8.7541C115.091 7.89258 114.16 7.21171 113.077 6.71148C112.021 6.21124 110.826 5.96112 109.492 5.96112C107.769 5.96112 106.24 6.37799 104.906 7.21171C103.572 8.01764 102.53 9.12927 101.78 10.5466C101.057 11.9361 100.696 13.4646 100.696 15.1321C100.696 16.8273 101.071 18.3975 101.821 19.8426C102.572 21.26 103.614 22.3994 104.948 23.2609C106.282 24.0946 107.81 24.5115 109.533 24.5115Z"/>
         <path d="M129.546 29.8473V0.583606H141.802C144.275 0.583606 146.359 0.986573 148.055 1.7925C149.75 2.57065 151.042 3.66838 151.931 5.08571C152.821 6.50304 153.265 8.1566 153.265 10.0464C153.265 12.2974 152.654 14.1594 151.431 15.6323C150.236 17.1052 148.61 18.1752 146.554 18.8422L154.391 29.8473H146.721L139.801 19.8009H136.174V29.8473H129.546ZM136.174 14.6318H141.176C142.288 14.6318 143.247 14.479 144.053 14.1733C144.886 13.8398 145.526 13.3535 145.97 12.7143C146.415 12.0751 146.637 11.3108 146.637 10.4215C146.637 9.00421 146.165 7.97596 145.22 7.33677C144.303 6.66979 143.024 6.3363 141.385 6.3363H136.174V14.6318Z"/>
@@ -304,6 +424,22 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
         <path d="M22.0028 6.45242L8.83829 6.45242L0 1.22803H28.3387V15.9388H10.0222V13.1891H22.0028V6.45242Z"/>
         <path d="M22.0028 25.2696H0L8.27713 30.4083H28.3387V15.9388H10.0222V18.6433H22.0028V25.2696Z"/>
       </svg>
+    </a>
+    <ul>
+      <li><a href="#overview">Input to output</a></li>
+      <li><a href="#jobs">The eight jobs</a></li>
+      <li><a href="#you">Where you step in</a></li>
+      <li><a href="#references">How it learns references</a></li>
+      <li><a href="#notes">Where notes go</a></li>
+      <li><a href="#rules">The rules</a></li>
+      <li><a href="#files">Where things go</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-top">
       <span class="label">Video studio workflow</span>
     </div>
     <h1 class="hero-title">A brief goes in.<br>A film comes out.</h1>
@@ -318,18 +454,6 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
   </svg>
 </header>
 
-<nav class="toc" aria-label="On this page">
-  <ul>
-    <li><a href="#overview">Input to output</a></li>
-    <li><a href="#jobs">The eight jobs</a></li>
-    <li><a href="#you">Where you step in</a></li>
-    <li><a href="#references">How it learns references</a></li>
-    <li><a href="#notes">Where notes go</a></li>
-    <li><a href="#rules">The rules</a></li>
-    <li><a href="#files">Where things go</a></li>
-  </ul>
-</nav>
-
 <main>
 
 <section class="band" id="overview">
@@ -340,25 +464,40 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
       <p class="lead">Only the brief is required. Your brand applies by itself, and the references are picked up from one shared folder.</p>
     </div>
 
+    <div class="callout offline" id="offline" hidden>
+      <p><strong>Live checks are off.</strong> <span id="offline-why"></span> Run this in the workspace folder, then open <a href="http://127.0.0.1:4179">http://127.0.0.1:4179</a>.</p>
+      <p><span class="path">node tools/video.mjs checklist</span></p>
+    </div>
+
+    <div class="checkbar" id="checkbar" hidden>
+      <div class="checkbar-field">
+        <label class="label" for="project">Checking</label>
+        <select id="project"></select>
+      </div>
+      <span class="checkbar-summary" id="summary" aria-live="polite"></span>
+      <span class="caption checkbar-time" id="checked"></span>
+      <button class="btn" type="button" id="recheck">Check again</button>
+    </div>
+
     <div class="flow">
       <div class="flow-col">
         <span class="label flow-title">You give</span>
-        <div class="card">
+        <div class="card" data-check="brief">
           <div class="card-head"><h3>The brief</h3><span class="tag tag-brand">Required</span></div>
           <p>What the film says, who it is for, its numbers and its beats. Written by you or another agent.</p>
           <p class="caption"><span class="path">briefs/inbox/</span></p>
         </div>
-        <div class="card">
+        <div class="card" data-check="brand">
           <div class="card-head"><h3>Your brand</h3><span class="tag tag-ink">Automatic</span></div>
           <p>Colours, fonts and layout. Copied into every new film.</p>
           <p class="caption"><span class="path">brand/DESIGN.md</span></p>
         </div>
-        <div class="card">
+        <div class="card" data-check="references">
           <div class="card-head"><h3>Video references</h3><span class="tag tag-ink">Optional</span></div>
           <p>Videos whose pacing and techniques you like. Files, links or both.</p>
           <p class="caption"><span class="path">references/</span></p>
         </div>
-        <div class="card">
+        <div class="card" data-check="env">
           <div class="card-head"><h3>Voice key</h3><span class="tag tag-ink">Optional</span></div>
           <p>Only for ElevenLabs narration. Kokoro voices are free and local, and you can also bring your own recording.</p>
           <p class="caption"><span class="path">.env</span></p>
@@ -369,7 +508,7 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
 
       <div class="flow-col flow-col-fill">
         <span class="label flow-title">Studio does</span>
-        <div class="card card-brand card-tall">
+        <div class="card card-brand card-tall" data-check="studio" data-title="This film">
           <h3>Type /video</h3>
           <p>Claude Code checks the brief, opens a project and runs the jobs in order. Each job must pass its gate before the next one starts.</p>
           <p class="caption"><span class="path">projects/&lt;id&gt;/</span></p>
@@ -380,17 +519,22 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
 
       <div class="flow-col">
         <span class="label flow-title">You get</span>
-        <div class="card">
-          <h3>Stills and a draft</h3>
-          <p>A review with the real sound, before anything is final.</p>
-          <p class="caption"><span class="path">stills/</span> <span class="path">draft.mp4</span></p>
+        <div class="card" data-check="out-stills">
+          <h3>The stills</h3>
+          <p>Frames from the film for a first look.</p>
+          <p class="caption"><span class="path">stills/</span></p>
         </div>
-        <div class="card card-accent">
+        <div class="card" data-check="out-draft">
+          <h3>The draft</h3>
+          <p>A review with the real sound, before anything is final.</p>
+          <p class="caption"><span class="path">draft.mp4</span></p>
+        </div>
+        <div class="card card-accent" data-check="out-final">
           <h3>The film</h3>
           <p class="muted">Rendered only after your yes, then checked for size, length, audio and loudness.</p>
           <p class="caption"><span class="path">final.mp4</span></p>
         </div>
-        <div class="card">
+        <div class="card" data-check="out-credits">
           <h3>The credits</h3>
           <p>Any sound attribution you need to publish with the film.</p>
           <p class="caption"><span class="path">CREDITS.md</span></p>
@@ -412,49 +556,49 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
       <li class="step step-head" aria-hidden="true">
         <span></span><span class="label">Job</span><span class="label">Leaves behind</span><span class="label">The gate checks</span>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-reference">
         <span class="num">1</span>
         <div><h3>Reference</h3><p class="muted">Decides the pacing and the look.</p></div>
         <div><span class="path">spec.md</span></div>
         <p class="muted">Every section is present, it points to your brand file, and each reference clip has a role.</p>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-data">
         <span class="num">2</span>
         <div><h3>Data</h3><p class="muted">Collects the real numbers.</p></div>
         <div><span class="path">data.json</span></div>
         <p class="muted">Every figure has a source and a date, and one figure is named as the hero.</p>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-story">
         <span class="num">3</span>
         <div><h3>Story</h3><p class="muted">Cuts the argument to one point, one hero number and three beats.</p></div>
         <div><span class="path">story.md</span></div>
         <p class="muted">All the parts are there, and the hero number matches the data.</p>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-voice">
         <span class="num">4</span>
         <div><h3>Voice</h3><p class="muted">Makes or collects the narration, then finds the time of each word. Skipped for a silent film.</p></div>
         <div><span class="path">voice/</span></div>
         <p class="muted">The audio and its transcript both exist.</p>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-motion">
         <span class="num">5</span>
         <div><h3>Motion</h3><p class="muted">Builds every frame.</p></div>
         <div><span class="path">scene/index.html</span></div>
         <p class="muted">Every number comes from the data, every colour comes from your brand, and no moment is timed by hand.</p>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-sound">
         <span class="num">6</span>
         <div><h3>Sound</h3><p class="muted">Places the effects, voice and music against the picture.</p></div>
         <div><span class="path">sound.json</span></div>
         <p class="muted">Every effect is in the catalogue, fits the brief's licence and has a reason to be there.</p>
       </li>
-      <li class="step">
+      <li class="step" data-check="job-ship">
         <span class="num">7</span>
         <div><h3>Ship</h3><p class="muted">Renders stills and a draft, asks you, then renders the film.</p></div>
         <div><span class="path">final.mp4</span></div>
         <p class="muted">Every gate again. Claude also looks at the stills. The final render refuses to run if the film changed after your yes.</p>
       </li>
-      <li class="step step-loop">
+      <li class="step step-loop" data-check="job-direct">
         <span class="num">8</span>
         <div><h3>Direct</h3><p class="muted">Runs only when you give a timing note, then goes back to Ship.</p></div>
         <div><span class="path">scene/timing.js</span></div>
@@ -505,12 +649,12 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
 
     <h3 class="sub">1. Put your videos in one place</h3>
     <div class="grid grid-2">
-      <div class="card">
+      <div class="card" data-check="ref-files" data-title="Reference files">
         <h3>Files</h3>
         <p>Drop videos straight into the folder. A few seconds each is fine.</p>
         <p class="caption"><span class="path">references/</span></p>
       </div>
-      <div class="card">
+      <div class="card" data-check="ref-links" data-title="Reference links">
         <h3>Links</h3>
         <p>Add one link per line. Claude downloads the video when a film needs it.</p>
         <p class="caption"><span class="path">references/urls.txt</span></p>
@@ -525,7 +669,7 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
   </div>
 </section>
 
-<section class="band band-brand">
+<section class="band band-brand" data-nav="references">
   <div class="wrap">
     <h3 class="sub">2. Claude studies each video once</h3>
     <ol class="study">
@@ -536,7 +680,9 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
       <li><h3>Write why it works</h3><p>Not what happens, but why it works. The notes have eight sections, listed below.</p></li>
       <li><h3>Keep the notes</h3><p>The frames are deleted. Any later film reuses the notes without studying the video again.</p></li>
     </ol>
-    <p class="caption" style="margin: 48px 0 16px"><span class="path">references/studies/&lt;name&gt;/study.md</span></p>
+    <div class="check-block" data-check="ref-studies" data-title="Reference studies">
+      <p class="caption"><span class="path">references/studies/&lt;name&gt;/study.md</span></p>
+    </div>
     <div class="tags">
       <span class="tag tag-ink">Pacing</span>
       <span class="tag tag-ink">First motion</span>
@@ -550,7 +696,7 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
   </div>
 </section>
 
-<section class="band band-subtle">
+<section class="band band-subtle" data-nav="references">
   <div class="wrap">
     <h3 class="sub">3. Each film gives every clip a role</h3>
     <div class="grid grid-3">
@@ -648,6 +794,361 @@ footer p { max-width: 1728px; margin: 0 auto; font-size: var(--type-caption); fo
 <footer>
   <p>Video studio. Rendering runs on this PC and is free.</p>
 </footer>
+
+<dialog class="viewer" id="viewer" aria-labelledby="viewer-title">
+  <div class="viewer-head">
+    <div>
+      <h2 class="viewer-title" id="viewer-title"></h2>
+      <span class="path" id="viewer-path" hidden></span>
+    </div>
+    <div class="viewer-actions">
+      <button class="btn" type="button" id="viewer-back" hidden>Back</button>
+      <button class="btn" type="button" id="viewer-close">Close</button>
+    </div>
+  </div>
+  <div class="viewer-body" id="viewer-body"></div>
+</dialog>
+
+<script nonce="__CSP_NONCE__">
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+
+  function make(tag, props, ...kids) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(props || {})) {
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k === 'onclick') el.addEventListener('click', v);
+      else el.setAttribute(k, v);
+    }
+    el.append(...kids);
+    return el;
+  }
+
+  function icon(d) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', '2');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    svg.append(path);
+    return svg;
+  }
+  const TICK = 'M5 13l4 4L19 7';
+  const ARROW = 'M4 12h16M14 6l6 6-6 6';
+
+  /* Navbar: mark the section on screen */
+  const links = new Map([...document.querySelectorAll('.toc ul a')].map((a) => [a.getAttribute('href').slice(1), a]));
+  const bands = [...document.querySelectorAll('.band')];
+  const onScreen = new Set();
+  const navList = document.querySelector('.toc ul');
+  let current = null;
+  function markSection() {
+    const band = bands.filter((b) => onScreen.has(b)).pop();
+    const link = band ? links.get(band.dataset.nav || band.id) : null;
+    if (link === current) return;
+    if (current) current.removeAttribute('aria-current');
+    current = link || null;
+    if (current) {
+      current.setAttribute('aria-current', 'true');
+      navList.scrollLeft = current.offsetLeft - navList.offsetLeft - 16;
+    }
+  }
+  const spy = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) onScreen.add(e.target);
+      else onScreen.delete(e.target);
+    }
+    markSection();
+  }, { rootMargin: '-64px 0px -70% 0px' });
+  bands.forEach((b) => spy.observe(b));
+
+  /* Checklist */
+  const offline = $('offline');
+  const bar = $('checkbar');
+  if (location.protocol === 'file:') {
+    $('offline-why').textContent = 'This page is open as a plain file, so it can\'t look at your folders.';
+    offline.hidden = false;
+    return;
+  }
+
+  const STORE = 'checklist-project';
+  const remember = {
+    get() { try { return localStorage.getItem(STORE); } catch { return null; } },
+    set(v) { try { localStorage.setItem(STORE, v); } catch { /* the choice just won't be remembered */ } },
+  };
+  const TAGS = { ok: 'tag-accent', missing: 'tag-highlight', warn: 'tag-highlight', todo: 'tag-quiet', off: 'tag-quiet' };
+  const rows = new Map();
+  const select = $('project');
+  let chosen = null;
+  let knownProjects = '';
+  let requestId = 0;
+
+  function rowFor(el) {
+    const id = el.dataset.check;
+    if (rows.has(id)) return rows.get(id);
+    const title = el.dataset.title || el.querySelector('h3').textContent;
+    const tag = make('span', { class: 'tag' });
+    const detail = make('span', { class: 'check-detail' });
+    const open = make('button', { class: 'check-open', type: 'button' });
+    const label = make('span');
+    open.append(label, icon(ARROW));
+    const row = make('div', { class: 'check' }, tag, detail, open);
+    (el.matches('.step') ? el.children[2] : el).append(row);
+    const entry = { el, row, tag, detail, open, label, title, check: null };
+    open.addEventListener('click', () => openViewer({ title, ...entry.check }));
+    rows.set(id, entry);
+    return entry;
+  }
+
+  function paint(checks) {
+    for (const el of document.querySelectorAll('[data-check]')) {
+      const c = checks[el.dataset.check];
+      if (!c) continue;
+      const r = rowFor(el);
+      r.check = c;
+      r.row.hidden = false;
+      r.tag.className = `tag ${TAGS[c.state] || 'tag-quiet'}`;
+      r.tag.replaceChildren(...(c.state === 'ok' ? [icon(TICK)] : []), c.label);
+      r.detail.textContent = c.detail || '';
+      const openable = !!(c.path || c.clips || c.notice);
+      r.open.hidden = !openable;
+      r.label.textContent = c.notice ? 'About' : 'View';
+      r.open.setAttribute('aria-label', `${c.notice ? 'About' : 'View'}: ${r.title}`);
+      el.classList.toggle('is-openable', openable);
+    }
+  }
+
+  function fillProjects(data) {
+    const key = data.projects.map((p) => p.id).join('\n');
+    if (key !== knownProjects || !select.options.length) {
+      knownProjects = key;
+      select.replaceChildren(
+        make('option', { value: '', text: 'Next film (inbox)' }),
+        ...data.projects.map((p) => make('option', { value: p.id, text: p.id })),
+      );
+    }
+    select.value = chosen;
+  }
+
+  function firstChoice(data) {
+    const saved = remember.get();
+    if (saved !== null && (saved === '' || data.projects.some((p) => p.id === saved))) return saved;
+    if (data.inbox > 0 || !data.projects.length) return '';
+    return data.projects[0].id;
+  }
+
+  function setText(el, text) {
+    if (el.textContent !== text) el.textContent = text;
+  }
+
+  async function refresh() {
+    const id = ++requestId;
+    try {
+      const query = chosen ? `?project=${encodeURIComponent(chosen)}` : '';
+      const res = await fetch(`/api/status${query}`);
+      const data = await res.json();
+      if (id !== requestId) return;
+      if (res.status === 404 && chosen) {
+        chosen = '';
+        return refresh();
+      }
+      if (!res.ok) throw new Error(data.error);
+      if (chosen === null) {
+        chosen = firstChoice(data);
+        if (chosen) return refresh();
+      }
+      offline.hidden = true;
+      bar.hidden = false;
+      fillProjects(data);
+      paint(data.checks);
+      const inputs = `${data.inputs.found} of ${data.inputs.total} inputs found.`;
+      setText($('summary'), data.project ? `${inputs} ${data.checks.studio.detail}.` : inputs);
+      setText($('checked'), `Checked ${new Date().toLocaleTimeString()}`);
+    } catch {
+      if (id !== requestId) return;
+      $('offline-why').textContent = 'The checklist stopped running, so these blocks can\'t be checked.';
+      offline.hidden = false;
+      bar.hidden = true;
+      for (const r of rows.values()) {
+        r.row.hidden = true;
+        r.el.classList.remove('is-openable');
+      }
+    }
+  }
+
+  select.addEventListener('change', () => {
+    chosen = select.value;
+    remember.set(chosen);
+    refresh();
+  });
+  $('recheck').addEventListener('click', refresh);
+  window.addEventListener('focus', refresh);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  setInterval(() => { if (!document.hidden) refresh(); }, 10000);
+  refresh();
+
+  /* Viewer */
+  const viewer = $('viewer');
+  const body = $('viewer-body');
+  const stack = [];
+  let viewId = 0;
+
+  function formatSize(n) {
+    if (n === null || n === undefined) return '';
+    if (n < 1024) return `${n} B`;
+    if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+    return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+  }
+  const notePanel = (...kids) => make('div', { class: 'viewer-note' }, ...kids);
+  const rawUrl = (p) => `/raw?path=${encodeURIComponent(p)}`;
+
+  function openViewer(view) {
+    stack.length = 0;
+    stack.push(view);
+    showTop();
+    if (!viewer.open) viewer.showModal();
+  }
+  function push(view) {
+    stack.push(view);
+    showTop();
+  }
+  function showTop() {
+    const view = stack[stack.length - 1];
+    $('viewer-title').textContent = view.title;
+    const chip = $('viewer-path');
+    chip.hidden = !view.path;
+    chip.textContent = view.path || '';
+    $('viewer-back').hidden = stack.length < 2;
+    body.scrollTop = 0;
+    render(view);
+  }
+
+  function intro(view) {
+    const parts = [];
+    if (view.notice) parts.push(notePanel(make('p', { text: view.notice })));
+    if (view.notes && view.notes.length) {
+      parts.push(notePanel(
+        make('strong', { text: 'Problems found' }),
+        make('ul', {}, ...view.notes.map((n) => make('li', { text: n }))),
+      ));
+    }
+    return parts;
+  }
+
+  function render(view) {
+    const id = ++viewId;
+    const parts = intro(view);
+    if (view.clips) {
+      body.replaceChildren(...parts, clipRows(view));
+      return;
+    }
+    if (!view.path) {
+      body.replaceChildren(...parts);
+      return;
+    }
+    body.replaceChildren(...parts, make('p', { class: 'muted', text: 'Opening...' }));
+    showEntry(view, id, parts);
+  }
+
+  async function showEntry(view, id, parts) {
+    let content;
+    try {
+      const res = await fetch(`/api/entry?path=${encodeURIComponent(view.path)}`);
+      const entry = await res.json();
+      if (res.status === 403) content = [make('p', { text: 'This page does not open that file.' })];
+      else if (!res.ok && entry.kind !== 'missing') content = [make('p', { text: entry.error || 'That could not be opened.' })];
+      else content = entryView(entry);
+    } catch {
+      content = [make('p', { text: 'The checklist stopped running. Start it again to open files.' })];
+    }
+    if (id === viewId) body.replaceChildren(...parts, ...content);
+  }
+
+  function entryView(e) {
+    const small = e.size === undefined ? [] : [make('p', { class: 'file-size', text: formatSize(e.size) })];
+    switch (e.kind) {
+      case 'missing': return [make('h3', { text: 'Not there yet' }), make('p', { class: 'muted', text: `Nothing at ${e.path} so far.` })];
+      case 'dir': return [dirRows(e)];
+      case 'markdown': return markdownView(e);
+      case 'text': return [...truncatedNote(e), make('pre', { text: e.text })];
+      case 'video': return [make('video', { src: e.url, controls: '', preload: 'metadata' }), ...small];
+      case 'audio': return [make('audio', { src: e.url, controls: '', preload: 'metadata' }), ...small];
+      case 'image': return [make('img', { src: e.url, alt: e.path }), ...small];
+      default: return [make('p', { text: 'This page can\'t show this kind of file.' }), ...small];
+    }
+  }
+
+  const truncatedNote = (e) => (e.truncated ? [notePanel(make('p', { text: 'This file is long, so only the first 1 MB is shown.' }))] : []);
+
+  function markdownView(e) {
+    // The server escapes everything in the file, and only its own tags reach this html.
+    const prose = make('div', { class: 'prose' });
+    prose.innerHTML = e.html;
+    const source = make('pre', { text: e.text });
+    source.hidden = true;
+    const read = make('button', { class: 'btn', type: 'button', text: 'Read', 'aria-pressed': 'true' });
+    const raw = make('button', { class: 'btn', type: 'button', text: 'Source', 'aria-pressed': 'false' });
+    const show = (asSource) => {
+      source.hidden = !asSource;
+      prose.hidden = asSource;
+      read.setAttribute('aria-pressed', String(!asSource));
+      raw.setAttribute('aria-pressed', String(asSource));
+    };
+    read.addEventListener('click', () => show(false));
+    raw.addEventListener('click', () => show(true));
+    return [...truncatedNote(e), make('div', { class: 'viewer-toggle' }, read, raw), prose, source];
+  }
+
+  function dirRows(e) {
+    if (!e.entries.length) return make('p', { class: 'muted', text: 'This folder is empty.' });
+    return make('div', { class: 'file-rows' }, ...e.entries.map((item) => {
+      const link = make('button', {
+        class: 'file-link',
+        type: 'button',
+        onclick: () => push({ title: item.name, path: item.path }),
+      });
+      if (item.kind === 'image') link.append(make('img', { src: rawUrl(item.path), alt: '', loading: 'lazy' }));
+      link.append(make('span', { text: item.kind === 'dir' ? `${item.name}/` : item.name }));
+      return make('div', { class: 'file-row' }, link, make('span', { class: 'file-size', text: formatSize(item.size) }));
+    }));
+  }
+
+  function clipRows(view) {
+    const list = make('div', { class: 'file-rows' }, ...view.clips.map((c) => {
+      const row = make('div', { class: 'file-row' }, make('span', { class: 'file-name', text: c.name }));
+      row.append(make('span', { class: `tag ${c.studied ? 'tag-accent' : 'tag-quiet'}`, text: c.studied ? 'Studied' : 'Not studied' }));
+      if (c.file) row.append(make('button', { class: 'btn', type: 'button', text: 'Watch', onclick: () => push({ title: c.name, path: c.file }) }));
+      if (c.url && /^https?:\/\//i.test(c.url)) row.append(make('a', { class: 'btn', href: c.url, target: '_blank', rel: 'noopener noreferrer', text: 'Open link' }));
+      if (c.studied) row.append(make('button', { class: 'btn', type: 'button', text: 'Read study', onclick: () => push({ title: `${c.name} study`, path: c.study }) }));
+      return row;
+    }));
+    if (!view.path) return list;
+    const all = make('button', { class: 'btn', type: 'button', text: `Open ${view.path}`, onclick: () => push({ title: view.path, path: view.path }) });
+    return make('div', { class: 'prose' }, list, make('div', {}, all));
+  }
+
+  $('viewer-back').addEventListener('click', () => {
+    stack.pop();
+    showTop();
+  });
+  $('viewer-close').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', (e) => { if (e.target === viewer) viewer.close(); });
+  viewer.addEventListener('close', () => {
+    // This event arrives a moment after closing. By then another block may have opened the viewer again.
+    if (viewer.open) return;
+    viewId++;
+    stack.length = 0;
+    body.replaceChildren();
+  });
+})();
+</script>
 
 </body>
 </html>
