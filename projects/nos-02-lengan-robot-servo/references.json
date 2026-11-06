@@ -1,0 +1,29 @@
+{
+  "clips": [
+    {
+      "name": "2e9817aabbb563782044d4b320cb7b27_720w.mp4",
+      "file": "references/2e9817aabbb563782044d4b320cb7b27_720w.mp4",
+      "study": "references/studies/2e9817aabbb563782044d4b320cb7b27_720w_mp4"
+    },
+    {
+      "name": "381adc978864bf9591a11deb0e7b9726_720w.mp4",
+      "file": "references/381adc978864bf9591a11deb0e7b9726_720w.mp4",
+      "study": "references/studies/381adc978864bf9591a11deb0e7b9726_720w_mp4"
+    },
+    {
+      "name": "51cf904934ece97678d444451ca9e925_720w.mp4",
+      "file": "references/51cf904934ece97678d444451ca9e925_720w.mp4",
+      "study": "references/studies/51cf904934ece97678d444451ca9e925_720w_mp4"
+    },
+    {
+      "name": "5f8ab1bd28bf48862352e5eacd86b60b.mp4",
+      "file": "references/5f8ab1bd28bf48862352e5eacd86b60b.mp4",
+      "study": "references/studies/5f8ab1bd28bf48862352e5eacd86b60b_mp4"
+    },
+    {
+      "name": "de4d7767b9025a3d8485571acc282638.mp4",
+      "file": "references/de4d7767b9025a3d8485571acc282638.mp4",
+      "study": "references/studies/de4d7767b9025a3d8485571acc282638_mp4"
+    }
+  ]
+}
