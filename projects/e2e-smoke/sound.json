@@ -1,0 +1,7 @@
+{
+  "voice": { "file": "voice/voice.wav", "at": 0, "gain_db": 0 },
+  "sfx": [
+    { "id": "soundfx/whoosh3", "at": "hero_in", "offset": -0.25, "gain_db": -16, "why": "Leads the eye into the hero number" },
+    { "id": "soundcn/impact-bell-heavy-000", "at": "hero_in", "gain_db": -14, "why": "Lands the hero number on the word free" }
+  ]
+}

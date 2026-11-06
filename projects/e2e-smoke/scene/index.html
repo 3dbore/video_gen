@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>The sound library</title>
+    <script src="gsap.min.js"></script>
+    <script src="timing.js"></script>
+    <script src="data.js"></script>
+    <style>
+      /* Scaffold only. The motion job replaces this look with the one in spec.md. */
+      :root {
+        --ground: #101114;
+        --ink: #f4f2ec;
+        --accent: #ffb000;
+        --font-display: "Segoe UI", Arial, sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root { position: relative; width: 100%; height: 100%; font-family: var(--font-display); color: var(--ink); }
+      .clip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--ground); }
+      .title { font-size: 120px; font-weight: 700; letter-spacing: -0.03em; }
+      .stack { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+      .num { font-size: 260px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; }
+      .hero { font-size: 420px; color: var(--accent); }
+      .label { font-size: 56px; font-weight: 500; opacity: 0.85; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="12" data-width="1920" data-height="1080">
+      <section id="library" class="clip" data-scene="library"><div class="stack"><div class="num" data-figure="all_sounds"></div><div class="label">sounds in the library</div></div></section>
+      <section id="proof" class="clip" data-scene="proof"><div class="stack"><div class="label setup">Almost every one</div><div class="num hero" data-figure="cc0_sounds"></div><div class="label hero-label">need no credit</div></div></section>
+      <section id="close" class="clip" data-scene="close"><h1 class="title">Pick one and go.</h1></section>
+    </div>
+    <script src="runtime.js"></script>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      // Every position is cue("name") from timing.js. Never write a bare number here.
+      tl.from("#library .num", { y: 60, duration: 0.4, ease: "power3.out" }, cue("library_in"));
+      tl.from("#library .label", { opacity: 0, y: 20, duration: 0.3, ease: "power2.out" }, cue("library_label"));
+      tl.from("#proof .setup", { opacity: 0, y: 20, duration: 0.3, ease: "power2.out" }, cue("proof_setup"));
+      tl.from("#proof .hero", { opacity: 0, scale: 0.7, duration: 0.35, ease: "back.out(1.6)" }, cue("hero_in"));
+      tl.from("#proof .hero-label", { opacity: 0, y: 20, duration: 0.3, ease: "power2.out" }, cue("hero_label"));
+      tl.from("#close .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("close_in"));
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

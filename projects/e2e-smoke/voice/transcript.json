@@ -1,0 +1,152 @@
+[
+  {
+    "id": "w0",
+    "text": "This",
+    "start": 0,
+    "end": 0.32
+  },
+  {
+    "id": "w1",
+    "text": "studio",
+    "start": 0.32,
+    "end": 0.8
+  },
+  {
+    "id": "w2",
+    "text": "has",
+    "start": 0.8,
+    "end": 1.04
+  },
+  {
+    "id": "w3",
+    "text": "a",
+    "start": 1.04,
+    "end": 1.2
+  },
+  {
+    "id": "w4",
+    "text": "sound",
+    "start": 1.2,
+    "end": 1.6
+  },
+  {
+    "id": "w5",
+    "text": "library.",
+    "start": 1.6,
+    "end": 2.88
+  },
+  {
+    "id": "w6",
+    "text": "Almost",
+    "start": 2.88,
+    "end": 3.52
+  },
+  {
+    "id": "w7",
+    "text": "every",
+    "start": 3.52,
+    "end": 3.84
+  },
+  {
+    "id": "w8",
+    "text": "sound",
+    "start": 3.84,
+    "end": 4.24
+  },
+  {
+    "id": "w9",
+    "text": "in",
+    "start": 4.24,
+    "end": 4.4
+  },
+  {
+    "id": "w10",
+    "text": "it",
+    "start": 4.4,
+    "end": 4.56
+  },
+  {
+    "id": "w11",
+    "text": "is",
+    "start": 4.56,
+    "end": 4.8
+  },
+  {
+    "id": "w12",
+    "text": "free",
+    "start": 4.8,
+    "end": 5.12
+  },
+  {
+    "id": "w13",
+    "text": "to",
+    "start": 5.12,
+    "end": 5.36
+  },
+  {
+    "id": "w14",
+    "text": "use,",
+    "start": 5.36,
+    "end": 5.92
+  },
+  {
+    "id": "w15",
+    "text": "with",
+    "start": 5.92,
+    "end": 6.16
+  },
+  {
+    "id": "w16",
+    "text": "no",
+    "start": 6.16,
+    "end": 6.48
+  },
+  {
+    "id": "w17",
+    "text": "credit",
+    "start": 6.48,
+    "end": 7.04
+  },
+  {
+    "id": "w18",
+    "text": "needed.",
+    "start": 7.04,
+    "end": 8.08
+  },
+  {
+    "id": "w19",
+    "text": "So",
+    "start": 8.08,
+    "end": 8.4
+  },
+  {
+    "id": "w20",
+    "text": "just",
+    "start": 8.4,
+    "end": 8.72
+  },
+  {
+    "id": "w21",
+    "text": "pick",
+    "start": 8.72,
+    "end": 9.12
+  },
+  {
+    "id": "w22",
+    "text": "one",
+    "start": 9.12,
+    "end": 9.44
+  },
+  {
+    "id": "w23",
+    "text": "and",
+    "start": 9.44,
+    "end": 9.68
+  },
+  {
+    "id": "w24",
+    "text": "go.",
+    "start": 9.68,
+    "end": 10.48
+  }
+]

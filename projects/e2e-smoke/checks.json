@@ -1,0 +1,29 @@
+{
+  "hash": "12e4cc2a9bd416e7",
+  "passed": true,
+  "gates": {},
+  "hyperframes_check": "passed",
+  "stills": [
+    "beat-01-at-0.3s.png",
+    "beat-02-at-1.35s.png",
+    "beat-03-at-3s.png",
+    "beat-04-at-5.35s.png",
+    "beat-05-at-8.3s.png",
+    "beat-06-at-10s.png",
+    "review-beats.jpg",
+    "review-phone.jpg",
+    "review-seam-01.jpg",
+    "review-seam-02.jpg",
+    "seam-01-1-at-2.5s.png",
+    "seam-01-2-at-2.6s.png",
+    "seam-01-3-at-2.7s.png",
+    "seam-01-4-at-2.8s.png",
+    "seam-01-5-at-2.9s.png",
+    "seam-02-1-at-7.8s.png",
+    "seam-02-2-at-7.9s.png",
+    "seam-02-3-at-8s.png",
+    "seam-02-4-at-8.1s.png",
+    "seam-02-5-at-8.2s.png"
+  ],
+  "at": "2026-11-06T13:38:29.250Z"
+}

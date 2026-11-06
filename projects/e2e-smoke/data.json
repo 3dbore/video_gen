@@ -1,0 +1,14 @@
+{
+  "hero": "cc0_sounds",
+  "figures": [
+    {
+      "id": "all_sounds", "value": 770, "unit": "sounds", "display": "770", "label": "sounds in the library",
+      "source": { "title": "Studio sound catalogue, field total", "path": "assets/sfx/catalog.json", "accessed": "2026-11-06" }
+    },
+    {
+      "id": "cc0_sounds", "value": 741, "unit": "sounds", "display": "741", "label": "need no credit",
+      "caveat": "CC0 only. The other sounds in the library are CC-BY-3.0.",
+      "source": { "title": "Studio sound catalogue, field by_license.CC0", "path": "assets/sfx/catalog.json", "accessed": "2026-11-06" }
+    }
+  ]
+}

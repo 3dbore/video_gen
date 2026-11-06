@@ -1,0 +1,34 @@
+{
+  "slug": "e2e-smoke",
+  "created": "2026-11-06T13:35:56.488Z",
+  "inputs": {
+    "voice": "inputs/voice.wav"
+  },
+  "jobs": {
+    "reference": {
+      "hash": "9e99782f88b1fbab",
+      "at": "2026-11-06T13:36:55.255Z"
+    },
+    "data": {
+      "hash": "a4cbd4d13d81beda",
+      "at": "2026-11-06T13:36:55.518Z"
+    },
+    "story": {
+      "hash": "5206c30575061e9a",
+      "at": "2026-11-06T13:36:55.851Z"
+    },
+    "voice": {
+      "hash": "05b9b249017a817d",
+      "at": "2026-11-06T13:36:56.183Z"
+    },
+    "sound": {
+      "hash": "1e4f2eb01690bfbc",
+      "at": "2026-11-06T13:36:56.817Z"
+    },
+    "motion": {
+      "hash": "b07595d9c78f6fa1",
+      "at": "2026-11-06T13:38:38.111Z"
+    }
+  },
+  "approval": null
+}
