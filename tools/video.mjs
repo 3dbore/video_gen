@@ -3,7 +3,10 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { parseBrief } from './brief.mjs';
+import { DEFAULT_MODEL, hasAudioTags, modelFollowsTags, speechRequest } from './elevenlabs.mjs';
 import { GATES, runGate } from './gates.mjs';
 import { measureLufs, mix, mux } from './mix.mjs';
 import {
@@ -222,7 +225,7 @@ function cmdVoice(slug) {
   } else {
     if (!fs.existsSync(p.voiceScript)) fail('voice/script.txt does not exist. Write the spoken script there first.');
     audio = v.provider === 'kokoro' ? kokoro(p, v) : null;
-    if (!audio) return elevenlabs(p, v).then((f) => transcribeTo(f, p.transcript, b));
+    if (!audio) return elevenlabs(p, v, b.meta.language).then((f) => transcribeTo(f, p.transcript, b));
   }
   transcribeTo(audio, p.transcript, b);
 }
@@ -234,19 +237,25 @@ function kokoro(p, v) {
   return out;
 }
 
-async function elevenlabs(p, v) {
+async function elevenlabs(p, v, language) {
   const key = process.env.ELEVENLABS_API_KEY;
   const voice = v.voice_id || process.env.ELEVENLABS_VOICE_ID;
   if (!key) fail('ELEVENLABS_API_KEY is empty. Add it to .env (never paste it in chat), or use voice.provider: kokoro.');
   if (!voice) fail('No voice id. Set voice.voice_id in the brief or ELEVENLABS_VOICE_ID in .env.');
-  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_128`, {
-    method: 'POST',
-    headers: { 'xi-api-key': key, 'content-type': 'application/json' },
-    body: JSON.stringify({ text: fs.readFileSync(p.voiceScript, 'utf8'), model_id: process.env.ELEVENLABS_MODEL_ID || 'eleven_multilingual_v2' }),
-  });
-  if (!res.ok) fail(`ElevenLabs returned ${res.status}: ${(await res.text()).slice(0, 300)}`);
+  const text = fs.readFileSync(p.voiceScript, 'utf8');
+  const model = process.env.ELEVENLABS_MODEL_ID || DEFAULT_MODEL;
+  // Checked before the request so a script the model would read out loud costs no credits.
+  if (hasAudioTags(text) && !modelFollowsTags(model)) fail(`voice/script.txt has audio tags, but ${model} would not follow them. Use eleven_v4 or remove the tags.`);
+  const { ElevenLabsClient } = await import('@elevenlabs/elevenlabs-js');
   const out = path.join(p.voiceDir, 'voice.mp3');
-  fs.writeFileSync(out, Buffer.from(await res.arrayBuffer()));
+  try {
+    // The client reads ELEVENLABS_API_KEY, which loadEnv() takes from .env.
+    const audio = await new ElevenLabsClient().textToSpeech.convert(voice, speechRequest(text, v, language, model));
+    await pipeline(Readable.fromWeb(audio), fs.createWriteStream(out));
+  } catch (e) {
+    fs.rmSync(out, { force: true });
+    fail(`ElevenLabs request failed${e.statusCode ? ` with status ${e.statusCode}` : ''}: ${JSON.stringify(e.body ?? e.message).slice(0, 300)}`);
+  }
   return out;
 }
 

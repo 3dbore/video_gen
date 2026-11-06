@@ -9,7 +9,7 @@ format:
 audience: Who is watching, and where
 goal: What they should remember or do afterwards
 platform: YouTube
-language: en
+language: en            # two-letter code of the narration: en, id, fr...
 one_point: The single idea, in one sentence
 hero_number: main_figure   # delete if data.mode is none
 # reference:
@@ -29,6 +29,7 @@ data:
 voice:
   mode: none            # none, tts or provided
   # provider: elevenlabs  # tts: elevenlabs or kokoro
+  # delivery: narration   # elevenlabs: narration, conversational, news or drama
   # file: voice.mp3       # provided: path relative to this file
 sound:
   music: none           # none, or a path relative to this file
@@ -42,7 +43,8 @@ sound:
 ---
 
 ## Beat 1: Hook (5s)
-VO: The words spoken.
+VO: The words spoken, in the brief's language, with numbers written as words.
+TONE: How those words should sound, in plain words.
 ON SCREEN: What the viewer sees.
 MOTION: How it moves, in plain words.
 SOUND: What it sounds like, in plain words.

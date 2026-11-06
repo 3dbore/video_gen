@@ -17,6 +17,7 @@ node tools/video.mjs check-brief briefs/inbox/my-brief.md
 3. **Say what the viewer sees, not how to build it.** "The bar jumps past the competition" is good. "GSAP tween on scaleY" is not.
 4. **Count the words.** Speech runs at about 2.5 words per second, so a 4 second beat holds about 10 words.
 5. **Don't include anything secret.** No API keys. Those go in `.env`.
+6. **Direct the voice.** If the film is narrated, set the language and say how each line should sound. See [Intonation and language](#intonation-and-language).
 
 ## Complete example
 
@@ -49,6 +50,7 @@ data:
 voice:
   mode: tts
   provider: elevenlabs
+  delivery: narration
 sound:
   music: none
   sfx: subtle
@@ -60,12 +62,14 @@ brand:
 
 ## Beat 1: Hook (4s)
 VO: In 2010, solar was a luxury.
+TONE: Dry and unhurried, a little amused
 ON SCREEN: A single rooftop panel with a huge price tag
 MOTION: The tag slams in on the first word
 SOUND: A low hit as the tag lands
 
 ## Beat 2: Drop (10s)
-VO: Then the price fell ninety percent, faster than almost anyone predicted.
+VO: [excited] Then the price fell... ninety percent, faster than almost anyone predicted.
+TONE: Builds, with the weight on "ninety percent"
 ON SCREEN: The hero number counts up, with a falling line behind it
 MOTION: The line draws as the number climbs
 SOUND: Rising tick, stops dead on the final number
@@ -96,7 +100,7 @@ MOTION: Panels pop on house by house
 | `audience` | yes | Who is watching, and where |
 | `goal` | yes | What they should remember or do afterwards |
 | `platform` | no | Where it will be posted |
-| `language` | no | Language code, default `en` |
+| `language` | no | Two-letter language code such as `en`, `id` or `fr`, default `en`. Used for the voice and the transcript |
 | `one_point` | yes | The single idea, in one sentence |
 | `hero_number` | if there is data | The `id` of the one figure the video is built around |
 | `reference.url` or `.file` | no | A video to match. Omit for the house style |
@@ -107,6 +111,9 @@ MOTION: Panels pop on house by house
 | `voice.mode` | yes | `none`, `tts` or `provided` |
 | `voice.provider` | for `tts` | `elevenlabs` (needs a key in `.env`) or `kokoro` (free and local) |
 | `voice.voice_id` | no | Overrides `ELEVENLABS_VOICE_ID` |
+| `voice.delivery` | no | ElevenLabs only: `narration`, `conversational`, `news` or `drama` |
+| `voice.stability` | no | ElevenLabs only: 0 to 1, overrides `delivery`. Lower is more expressive |
+| `voice.similarity_boost` | no | ElevenLabs only: 0 to 1, overrides `delivery`. Lower it if you hear artifacts |
 | `voice.file` | for `provided` | Path relative to the brief |
 | `sound.music` | no | `none`, or a path relative to the brief. A file needs `sound.music_license` |
 | `sound.sfx` | yes | `none`, `subtle` or `expressive` |
@@ -115,11 +122,12 @@ MOTION: Panels pop on house by house
 
 ## Beats
 
-Each beat is a heading with a name and a length, then any of four labelled lines:
+Each beat is a heading with a name and a length, then any of five labelled lines:
 
 ```markdown
 ## Beat 2: Drop (10s)
 VO: The words spoken.
+TONE: How those words should sound, in plain words.
 ON SCREEN: What the viewer sees.
 MOTION: How it moves, in plain words.
 SOUND: What it sounds like, in plain words.
@@ -128,6 +136,57 @@ SOUND: What it sounds like, in plain words.
 Each beat needs `VO:` or `ON SCREEN:`. Beats must be numbered in order. If the lengths don't add up to `duration_s`, they are scaled to fit and you get a warning.
 
 A brief can have any number of beats. The story job still reduces the argument to three story beats, so a brief with six scenes needs a clear shape.
+
+## Intonation and language
+
+These rules apply to `voice.provider: elevenlabs`. Kokoro refuses audio tags because it would read them out loud, and a `provided` recording already has its delivery. Direction costs nothing to write, but regenerating a voice uses credits, so get it right in the brief.
+
+### Set the language
+
+1. Set `language` to the two-letter code of the narration. Omit it only for English.
+2. Write every `VO:` line in that language. The voice reads what you write and won't translate it.
+3. Use one language per film. Make a second brief, with its own `id`, for another language.
+4. Write numbers, dates and abbreviations in words, the way they should be said in that language: "ninety percent", not "90%". The figure on screen still comes from `data.json`.
+5. Check the timing by ear. The limit of about 2.5 words per second is a guide for English, and other languages can run longer or shorter.
+
+### Set the intonation, from broad to fine
+
+**1. The whole film: `voice.delivery`**
+
+| Value | Stability | Sounds like |
+|---|---|---|
+| `drama` | 0.3 | Highly expressive, for character and story |
+| `conversational` | 0.4 | A person talking to you, for most short social films |
+| `narration` | 0.7 | Steady and consistent, for explainers |
+| `news` | 0.8 | Very even and professional |
+
+If the result is monotone, lower `voice.stability`. If it sounds erratic, raise it. With no setting, the voice uses the ElevenLabs default of 0.5.
+
+**2. Each beat: `TONE:`**
+
+Describe the sound in plain words, such as "Quiet and close, then rising" or "Dry, a little amused". Name the word that carries the weight. The voice job turns this into the tags and punctuation below.
+
+**3. Individual words: inside `VO:`, only when it must be exact**
+
+| To get | Write | Example |
+|---|---|---|
+| A feeling or manner | An audio tag before the words | `[whispers] Nobody saw it coming.` |
+| A sound the voice makes | An audio tag at that moment | `It failed. [sighs] Again.` |
+| An accent | An audio tag | `[strong French accent] Bonjour.` |
+| A pause or added weight | An ellipsis | `It fell... ninety percent.` |
+| Emphasis | Capitals on one word | `It was NOT cheap.` |
+| Rhythm | Short sentences and normal punctuation | `One panel. Then a street.` |
+| An exact pronunciation | IPA between slashes | `/ˈsoʊlər/` |
+
+Tag names like `[excited]`, `[sarcastic]` and `[laughs]` also work. Tags aren't spoken and don't count toward the word limit.
+
+### Keep it believable
+
+- Use at most one tag per sentence. Let punctuation do the rest.
+- Choose a tag that suits the voice. A deep, serious voice won't giggle convincingly.
+- Capitalize one word per line at most.
+- Don't use `<break>` tags, SSML or a speed value. The current model doesn't support them. To make a line fit, cut words.
+- Test unusual names and any IPA, because results vary by voice.
 
 ## Optional sections
 

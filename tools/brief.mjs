@@ -1,10 +1,11 @@
 // Parses and validates the brief format defined in docs/BRIEF_FORMAT.md.
 import YAML from 'yaml';
+import { DELIVERY, hasAudioTags, withoutAudioTags } from './elevenlabs.mjs';
 import { DIMENSIONS } from './lib.mjs';
 
 const BEAT = /^##\s+Beat\s+(\d+)\s*[:\-–—]\s*(.+?)\s*(?:\(\s*(\d+(?:\.\d+)?)\s*s\s*\))?\s*$/i;
-const FIELD = /^(VO|ON SCREEN|MOTION|SOUND)\s*:\s*(.*)$/i;
-const FIELD_KEY = { VO: 'vo', 'ON SCREEN': 'on_screen', MOTION: 'motion', SOUND: 'sound' };
+const FIELD = /^(VO|TONE|ON SCREEN|MOTION|SOUND)\s*:\s*(.*)$/i;
+const FIELD_KEY = { VO: 'vo', TONE: 'tone', 'ON SCREEN': 'on_screen', MOTION: 'motion', SOUND: 'sound' };
 const WORDS_PER_SECOND = 2.5;
 
 function parseBody(body) {
@@ -17,7 +18,7 @@ function parseBody(body) {
     const line = raw.trimEnd();
     const b = line.match(BEAT);
     if (b) {
-      beat = { n: Number(b[1]), name: b[2], seconds: b[3] ? Number(b[3]) : null, vo: '', on_screen: '', motion: '', sound: '' };
+      beat = { n: Number(b[1]), name: b[2], seconds: b[3] ? Number(b[3]) : null, vo: '', tone: '', on_screen: '', motion: '', sound: '' };
       beats.push(beat);
       field = section = null;
       continue;
@@ -89,6 +90,21 @@ export function parseBrief(text) {
   need(['none', 'tts', 'provided'].includes(voice.mode), 'voice.mode must be none, tts or provided.');
   if (voice.mode === 'provided') need(voice.file, 'voice.mode "provided" needs voice.file.');
   if (voice.mode === 'tts') need(['elevenlabs', 'kokoro'].includes(voice.provider), 'voice.provider must be elevenlabs or kokoro.');
+  need(meta.language === undefined || /^[a-z]{2}$/.test(meta.language), 'language must be a two-letter code such as en, id or fr.');
+  if (voice.delivery !== undefined) need(DELIVERY[voice.delivery], `voice.delivery must be one of ${Object.keys(DELIVERY).join(', ')}.`);
+  for (const k of ['stability', 'similarity_boost']) {
+    if (voice[k] !== undefined) need(typeof voice[k] === 'number' && voice[k] >= 0 && voice[k] <= 1, `voice.${k} must be a number from 0 to 1.`);
+  }
+  const followsDirection = voice.mode === 'tts' && voice.provider === 'elevenlabs';
+  const tagged = beats.filter((b) => hasAudioTags(b.vo));
+  if (voice.mode === 'tts' && voice.provider === 'kokoro') {
+    need(!tagged.length, `Kokoro would read audio tags out loud. Remove them from beat ${tagged.map((b) => b.n).join(', ')}.`);
+  }
+  if (voice.mode === 'provided' && tagged.length) warnings.push(`The voice is a provided recording, so the audio tags in beat ${tagged.map((b) => b.n).join(', ')} do nothing.`);
+  if (voice.mode !== 'none' && !followsDirection && (voice.delivery || voice.stability !== undefined || voice.similarity_boost !== undefined || beats.some((b) => b.tone))) {
+    warnings.push('voice.delivery, stability, similarity_boost and TONE only affect voice.provider elevenlabs.');
+  }
+  for (const b of beats) if (b.tone && !b.vo) warnings.push(`Beat ${b.n} has TONE: but no VO: to apply it to.`);
 
   const sound = meta.sound || {};
   need(['none', 'subtle', 'expressive'].includes(sound.sfx), 'sound.sfx must be none, subtle or expressive.');
@@ -101,7 +117,7 @@ export function parseBrief(text) {
     need(b.seconds, `Beat ${b.n} needs a length in its heading, e.g. "## Beat ${b.n}: ${b.name} (5s)".`);
     need(b.on_screen || b.vo, `Beat ${b.n} needs at least VO: or ON SCREEN:.`);
     if (voice.mode !== 'none' && b.vo && b.seconds) {
-      const words = b.vo.split(/\s+/).filter(Boolean).length;
+      const words = withoutAudioTags(b.vo).split(/\s+/).filter(Boolean).length;
       const secs = words / WORDS_PER_SECOND;
       if (secs > b.seconds * 1.15) {
         warnings.push(`Beat ${b.n}: ${words} words take about ${secs.toFixed(1)}s to say but the beat is ${b.seconds}s.`);

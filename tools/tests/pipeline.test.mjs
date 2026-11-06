@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { parseBrief } from '../brief.mjs';
+import { modelFollowsTags, speechRequest } from '../elevenlabs.mjs';
 import { gateMotion, gateData, visibleText } from '../gates.mjs';
 import { buildGraph } from '../mix.mjs';
 import { loadTiming, resolveTime } from '../lib.mjs';
@@ -57,6 +58,42 @@ test('too many spoken words produces a warning', () => {
   const words = Array(40).fill('word').join(' ');
   const b = parseBrief(VALID.replace('voice: { mode: none }', 'voice: { mode: provided, file: v.mp3 }').replace('ON SCREEN: Text', `VO: ${words}`));
   assert.ok(b.warnings.some((w) => /words/.test(w)));
+});
+
+const TTS = VALID.replace('voice: { mode: none }', 'voice: { mode: tts, provider: elevenlabs }');
+
+test('a beat can carry a tone, and audio tags do not count as spoken words', () => {
+  const tags = Array(40).fill('[excited]').join(' ');
+  const b = parseBrief(TTS.replace('ON SCREEN: Text', `VO: Hello there ${tags}\nTONE: Warm, then rising`));
+  assert.equal(b.beats[0].tone, 'Warm, then rising');
+  assert.deepEqual(b.errors, []);
+  assert.ok(!b.warnings.some((w) => /words/.test(w)));
+});
+
+test('kokoro refuses audio tags because it would read them aloud', () => {
+  const b = parseBrief(VALID.replace('voice: { mode: none }', 'voice: { mode: tts, provider: kokoro }').replace('ON SCREEN: Text', 'VO: [excited] Hello'));
+  assert.ok(b.errors.some((e) => /Kokoro/.test(e)));
+});
+
+test('a bad language, delivery or stability is refused', () => {
+  const b = parseBrief(`${TTS.replace('voice: { mode: tts, provider: elevenlabs }', 'voice: { mode: tts, provider: elevenlabs, delivery: shouty, stability: 2 }').replace('audience:', 'language: English\naudience:')}`);
+  for (const word of ['language', 'delivery', 'stability']) assert.ok(b.errors.some((e) => e.includes(word)), word);
+});
+
+test('the brief sets the delivery and language of the speech request', () => {
+  const r = speechRequest('Hi', { delivery: 'narration', stability: 0.45 }, 'id');
+  assert.deepEqual(r.voiceSettings, { stability: 0.45, similarityBoost: 0.5 });
+  assert.equal(r.languageCode, 'id');
+  assert.equal(r.modelId, 'eleven_v4');
+  assert.equal(speechRequest('Hi', {}).voiceSettings, undefined);
+  assert.equal(speechRequest('Hi', {}, 'id', 'eleven_multilingual_v2').languageCode, undefined);
+});
+
+test('only models that follow audio tags accept them', () => {
+  assert.ok(modelFollowsTags('eleven_v4'));
+  assert.ok(modelFollowsTags('eleven_v3'));
+  assert.ok(!modelFollowsTags('eleven_multilingual_v2'));
+  assert.ok(!modelFollowsTags('eleven_flash_v2_5'));
 });
 
 function tempProject(html, figures = []) {
