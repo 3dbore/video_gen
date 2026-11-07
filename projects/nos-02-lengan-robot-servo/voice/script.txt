@@ -1,0 +1,11 @@
+[curious] Lengan robot ini pakai motor servo biasa. Desainnya GRATIS, open source.
+
+Namanya Compact Robotic Arm. Desainnya dibagikan gratis, jadi... boleh kamu pakai dan ubah.
+
+Isinya cuma tiga bagian. Motor servo, yang menggerakkan sendi. Papan driver, yang mengatur motornya. Dan Arduino, sebagai otaknya.
+
+[curious] Berapa harga motornya? Satu servo em ji nain ziro es, sekitar... dua puluh dua ribu sampai tujuh puluh dua ribu rupiah. Servo em ji nain nain siks ar yang lebih kuat, sekitar lima puluh tiga sampai tujuh puluh delapan ribu.
+
+[calmly] Harga ini baru motornya. Jumlah motor dan power supply masih kami cek.
+
+[warmly] Mau print part-nya? TANYA tri di bo re lewat WhatsApp atau DM Instagram.

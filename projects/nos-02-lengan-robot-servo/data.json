@@ -1,0 +1,33 @@
+{
+  "hero": "mg90s_price",
+  "figures": [
+    {
+      "id": "mg90s_price",
+      "value": { "low": 22500, "high": 71745 },
+      "unit": "IDR",
+      "display": "Rp22.500 sampai Rp71.745",
+      "label": "contoh harga satu motor servo MG90S di toko online Indonesia, dicek 7 Nov 2026",
+      "caveat": "Lowest and highest of 10 listings visible on one results screen, delivery set to Jakarta Pusat. Not the whole market. Shown prices, some discounted. Replaces the brief's single price at the person's request, 7 Nov 2026. No store is named, at the person's request.",
+      "source": {
+        "title": "Screenshot of Tokopedia search results for MG90S",
+        "path": "inputs/prices-mg90s-2026-11-07.png",
+        "accessed": "2026-11-07",
+        "quote": "Lowest shown Rp22.500, highest shown Rp71.745"
+      }
+    },
+    {
+      "id": "mg996r_price",
+      "value": { "low": 53350, "high": 78480 },
+      "unit": "IDR",
+      "display": "Rp53.350 sampai Rp78.480",
+      "label": "contoh harga satu motor servo MG996R di toko online Indonesia, dicek 7 Nov 2026",
+      "caveat": "Lowest and highest of 7 of the 10 listings visible on one results screen, delivery set to Jakarta Pusat. Three listings marked 360 degrees (Rp48.015, Rp61.500, Rp81.883) are excluded, judged from thumbnails and titles, because a continuous-rotation servo cannot hold a joint angle. Not the whole market. Shown prices, some discounted. Replaces the brief's mg996r_low and mg996r_high at the person's request, 7 Nov 2026. No store is named, at the person's request.",
+      "source": {
+        "title": "Screenshot of Tokopedia search results for MG996R",
+        "path": "inputs/prices-mg996r-2026-11-07.png",
+        "accessed": "2026-11-07",
+        "quote": "Excluding 360-degree listings: lowest Rp53.350, highest Rp78.480"
+      }
+    }
+  ]
+}

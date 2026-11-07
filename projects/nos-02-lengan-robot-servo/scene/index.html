@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1920" />
@@ -8,44 +8,269 @@
     <script src="timing.js"></script>
     <script src="data.js"></script>
     <style>
-      /* Scaffold only. The motion job replaces this look with the one in spec.md. */
+      @font-face { font-family: "Geom"; font-weight: 300; src: url("fonts/Geom-300.ttf") format("truetype"); }
+      @font-face { font-family: "Geom"; font-weight: 400; src: url("fonts/Geom-400.ttf") format("truetype"); }
+      @font-face { font-family: "Geom"; font-weight: 500; src: url("fonts/Geom-500.ttf") format("truetype"); }
+      @font-face { font-family: "Geom"; font-weight: 600; src: url("fonts/Geom-600.ttf") format("truetype"); }
+      @font-face { font-family: "Geom"; font-weight: 700; src: url("fonts/Geom-700.ttf") format("truetype"); }
+
       :root {
-        --ground: #101114;
-        --ink: #f4f2ec;
-        --accent: #ffb000;
-        --font-display: "Segoe UI", Arial, sans-serif;
+        --navy: #001848;
+        --cobalt: #3065EF;
+        --chartreuse: #DBEB42;
+        --blush: #FB4988;
+        --white: #FFFFFF;
       }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body {
-        width: 1080px;
-        height: 1920px;
-        overflow: hidden;
-        background: var(--ground);
-      }
-      #root { position: relative; width: 100%; height: 100%; font-family: var(--font-display); color: var(--ink); }
-      .clip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--ground); }
-      .title { font-size: 96px; font-weight: 700; letter-spacing: -0.03em; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--navy); }
+      #root { position: relative; width: 100%; height: 100%; font-family: "Geom", sans-serif; color: var(--white); }
+      .clip { position: absolute; inset: 0; overflow: hidden; }
+      .abs { position: absolute; left: 96px; width: 888px; }
+
+      /* Type: one large line per field, labels far smaller. */
+      .line { font-weight: 700; letter-spacing: -0.02em; }
+      .label { font-size: 30px; line-height: 40px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+      .small { font-size: 32px; line-height: 44px; font-weight: 400; }
+
+      /* Beat 1 */
+      #hook { background: var(--navy); }
+      #arm { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #hook_label { top: 240px; color: var(--chartreuse); }
+      #hook_title_a { top: 296px; font-size: 92px; line-height: 104px; }
+      #hook_title_b { top: 400px; font-size: 92px; line-height: 104px; }
+
+      /* Beat 2 */
+      #desain_gratis { background: var(--white); color: var(--navy); }
+      #arm_name { top: 360px; font-size: 48px; line-height: 56px; font-weight: 600; color: var(--cobalt); }
+      #gratis_a { top: 440px; font-size: 136px; line-height: 144px; color: var(--navy); }
+      #gratis_b { top: 584px; font-size: 136px; line-height: 144px; color: var(--navy); }
+      #gratis_rule { position: absolute; left: 96px; top: 736px; width: 452px; height: 16px; background: var(--cobalt); border-radius: 8px; transform-origin: left center; }
+      #license_card { top: 832px; width: 500px; padding: 32px 48px; border-radius: 16px; background: var(--navy); color: var(--white); font-size: 64px; line-height: 72px; font-weight: 700; }
+      #credit { top: 1016px; width: 600px; font-size: 40px; line-height: 56px; font-weight: 400; color: var(--navy); }
+
+      /* Beat 3 */
+      #tiga_bagian { background: var(--cobalt); }
+      #parts_title { top: 260px; font-size: 64px; line-height: 72px; }
+      .box { position: absolute; left: 96px; width: 888px; height: 208px; padding: 32px 48px; border-radius: 16px; background: var(--white); color: var(--cobalt); }
+      .box_name { font-size: 64px; line-height: 80px; font-weight: 700; letter-spacing: 0.01em; }
+      .box_role { font-size: 40px; line-height: 56px; font-weight: 400; color: var(--navy); }
+      #box_motor { top: 376px; }
+      #box_driver { top: 696px; }
+      #box_arduino { top: 1016px; }
+      .arrow { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+
+      /* Beat 4 */
+      #harga_motor { background: var(--navy); }
+      #price_question { top: 384px; font-size: 104px; line-height: 112px; }
+      #mg90s_label { top: 720px; font-size: 48px; line-height: 56px; font-weight: 500; color: var(--chartreuse); }
+      #counter { top: 792px; font-size: 160px; line-height: 168px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+      .plate { position: absolute; left: 96px; top: 288px; width: 888px; padding: 40px 48px 48px; border-radius: 32px; background: var(--chartreuse); color: var(--navy); }
+      .plate_label { font-size: 40px; line-height: 48px; font-weight: 500; margin-bottom: 8px; }
+      .plate .big { display: block; font-size: 160px; line-height: 160px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+      .plate .mid { display: block; font-size: 56px; line-height: 72px; font-weight: 500; }
+      #mg996r_label { top: 880px; font-size: 40px; line-height: 48px; font-weight: 500; color: var(--chartreuse); }
+      #mg996r_tag { position: absolute; left: 560px; top: 878px; padding: 4px 24px; border-radius: 999px; background: var(--cobalt); color: var(--white); font-size: 32px; line-height: 44px; font-weight: 500; }
+      #mg996r_price { top: 944px; font-size: 62px; line-height: 72px; font-weight: 700; letter-spacing: -0.01em; }
+      #source_line { top: 1064px; width: 800px; }
+
+      /* Beat 5 */
+      #jujur_soal_harga { background: var(--white); color: var(--navy); }
+      #honest_a { top: 480px; font-size: 108px; line-height: 120px; }
+      #honest_b { top: 600px; font-size: 108px; line-height: 120px; }
+      .pill { position: absolute; left: 96px; width: 888px; padding: 20px 40px; border-radius: 16px; background: var(--blush); color: var(--navy); font-size: 44px; line-height: 56px; font-weight: 500; }
+      #honest_motors { top: 780px; }
+      #honest_power { top: 900px; }
+
+      /* Beat 6 */
+      #ajakan { background: var(--cobalt); }
+      #cta_logo { position: absolute; left: 96px; top: 320px; width: 592px; height: auto; }
+      #cta_text { top: 480px; font-size: 96px; line-height: 108px; white-space: nowrap; }
+      #cta_text span { display: block; }
+      #cta_tanya { color: var(--white); }
+      #cta_contact { top: 780px; font-size: 48px; line-height: 64px; font-weight: 600; }
+      #cta_credit { top: 980px; width: 800px; font-size: 30px; line-height: 42px; font-weight: 400; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="45" data-width="1080" data-height="1920">
-      <section id="hook" class="clip" data-scene="hook"><h1 class="title">Hook</h1></section>
-      <section id="desain_gratis" class="clip" data-scene="desain_gratis"><h1 class="title">Desain gratis</h1></section>
-      <section id="tiga_bagian" class="clip" data-scene="tiga_bagian"><h1 class="title">Tiga bagian</h1></section>
-      <section id="harga_motor" class="clip" data-scene="harga_motor"><h1 class="title">Harga motor</h1></section>
-      <section id="jujur_soal_harga" class="clip" data-scene="jujur_soal_harga"><h1 class="title">Jujur soal harga</h1></section>
-      <section id="ajakan" class="clip" data-scene="ajakan"><h1 class="title">Ajakan</h1></section>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="50" data-width="1080" data-height="1920">
+
+      <section id="hook" class="clip" data-scene="hook">
+        <svg id="arm" viewBox="0 0 1080 1920" fill="none">
+          <g id="forearm">
+            <path id="arm_forearm" class="draw" d="M380 840 L780 840" pathLength="100" stroke="#FFFFFF" stroke-width="32" stroke-linecap="round" stroke-dasharray="100 120" />
+            <path id="arm_gripper" class="draw" d="M780 840 L850 840 M930 790 L850 790 L850 890 L930 890" pathLength="100" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="100 120" />
+            <circle id="arm_wrist" cx="780" cy="840" r="30" fill="#001848" stroke="#DBEB42" stroke-width="12" />
+          </g>
+          <path id="arm_lower" class="draw" d="M490 1200 L380 840" pathLength="100" stroke="#FFFFFF" stroke-width="32" stroke-linecap="round" stroke-dasharray="100 120" />
+          <circle id="arm_elbow" cx="380" cy="840" r="40" fill="#001848" stroke="#DBEB42" stroke-width="12" />
+          <circle id="arm_shoulder" cx="490" cy="1200" r="40" fill="#001848" stroke="#DBEB42" stroke-width="12" />
+          <path id="arm_base" class="draw" d="M320 1280 L660 1280" pathLength="100" stroke="#3065EF" stroke-width="48" stroke-linecap="round" stroke-dasharray="100 120" />
+        </svg>
+        <div id="hook_label" class="abs label">Ngomongin open-sauce</div>
+        <div id="hook_title_a" class="abs line">Lengan robot dari</div>
+        <div id="hook_title_b" class="abs line"><span id="hook_servo">motor servo</span> murah.</div>
+      </section>
+
+      <section id="desain_gratis" class="clip" data-scene="desain_gratis">
+        <div id="arm_name" class="abs">Compact Robotic Arm</div>
+        <div id="gratis_a" class="abs line">Desainnya</div>
+        <div id="gratis_b" class="abs line">gratis.</div>
+        <div id="gratis_rule"></div>
+        <div id="license_card" class="abs">Lisensi MIT</div>
+        <div id="credit" class="abs">Desain: proyek jonserra di Arduino Project Hub</div>
+      </section>
+
+      <section id="tiga_bagian" class="clip" data-scene="tiga_bagian">
+        <div id="parts_title" class="abs line">Isinya cuma tiga bagian.</div>
+        <div id="box_motor" class="box">
+          <div class="box_name">MOTOR SERVO</div>
+          <div id="role_motor" class="box_role">gerak</div>
+        </div>
+        <svg id="arrow_motor" class="arrow" viewBox="0 0 1080 1920" fill="none">
+          <path class="draw" d="M540 600 L540 676 M512 648 L540 676 L568 648" pathLength="100" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="100 120" />
+        </svg>
+        <div id="box_driver" class="box">
+          <div class="box_name">PAPAN DRIVER</div>
+          <div id="role_driver" class="box_role">atur motor</div>
+        </div>
+        <svg id="arrow_driver" class="arrow" viewBox="0 0 1080 1920" fill="none">
+          <path class="draw" d="M540 920 L540 996 M512 968 L540 996 L568 968" pathLength="100" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="100 120" />
+        </svg>
+        <div id="box_arduino" class="box">
+          <div class="box_name">ARDUINO</div>
+          <div id="role_arduino" class="box_role">otak</div>
+        </div>
+      </section>
+
+      <section id="harga_motor" class="clip" data-scene="harga_motor">
+        <div id="price_question" class="abs line">Berapa harga motornya?</div>
+        <div id="mg90s_label" class="abs" data-allow-digits>Satu servo MG90S</div>
+        <div id="counter" class="abs"></div>
+
+        <div id="echo3" class="plate echo" data-layout-allow-overlap><div class="plate_label">&nbsp;</div><div class="hero_range" data-figure="mg90s_price"></div></div>
+        <div id="echo2" class="plate echo" data-layout-allow-overlap><div class="plate_label">&nbsp;</div><div class="hero_range" data-figure="mg90s_price"></div></div>
+        <div id="echo1" class="plate echo" data-layout-allow-overlap><div class="plate_label">&nbsp;</div><div class="hero_range" data-figure="mg90s_price"></div></div>
+        <div id="plate" class="plate" data-layout-allow-overlap><div class="plate_label" data-allow-digits>Satu servo MG90S</div><div class="hero_range" data-figure="mg90s_price"></div></div>
+
+        <div id="mg996r_label" class="abs" data-layout-allow-overflow data-allow-digits>Satu servo MG996R</div>
+        <div id="mg996r_tag">lebih kuat</div>
+        <div id="mg996r_price" class="abs" data-layout-allow-overflow data-figure="mg996r_price"></div>
+        <div id="source_line" class="abs small" data-allow-digits>Contoh harga toko online Indonesia, dicek 7 Nov 2026. Beda tiap toko.</div>
+      </section>
+
+      <section id="jujur_soal_harga" class="clip" data-scene="jujur_soal_harga">
+        <div id="honest_a" class="abs line">Ini baru harga</div>
+        <div id="honest_b" class="abs line">motornya.</div>
+        <div id="honest_motors" class="pill">Jumlah motor: sedang kami cek</div>
+        <div id="honest_power" class="pill">Power supply: sedang kami cek</div>
+      </section>
+
+      <section id="ajakan" class="clip" data-scene="ajakan">
+        <img id="cta_logo" src="logo-white.svg" alt="3D BORE" />
+        <div id="cta_text" class="abs line"><span>Mau print part-nya?</span><span id="cta_tanya">Tanya kami.</span></div>
+        <div id="cta_contact" class="abs" data-allow-digits>WhatsApp atau DM Instagram @3dbore</div>
+        <div id="cta_credit" class="abs" data-allow-digits>Desain: jonserra, Arduino Project Hub. Harga: toko online Indonesia, 7 Nov 2026</div>
+      </section>
     </div>
+
     <script src="runtime.js"></script>
     <script>
       const tl = gsap.timeline({ paused: true });
-      // Every position is cue("name") from timing.js. Never write a bare number here.
-      tl.from("#hook .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("hook_in"));
-      tl.from("#desain_gratis .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("desain_gratis_in"));
-      tl.from("#tiga_bagian .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("tiga_bagian_in"));
-      tl.from("#harga_motor .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("harga_motor_in"));
-      tl.from("#jujur_soal_harga .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("jujur_soal_harga_in"));
-      tl.from("#ajakan .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("ajakan_in"));
+      const FIG = window.DATA.figures;
+
+      // Helpers. Every position passed in is a cue from timing.js.
+      const enterX = (sel, x, at) => tl.from(sel, { x, duration: 0.45, ease: "power2.out" }, at);
+      const rise = (sel, at) => tl.from(sel, { y: 48, opacity: 0, duration: 0.45, ease: "power2.out" }, at);
+      const fadeIn = (sel, at) => tl.from(sel, { opacity: 0, duration: 0.3, ease: "power2.out" }, at);
+      const draw = (sel, dur, at) => tl.fromTo(sel, { strokeDashoffset: 110 }, { strokeDashoffset: 0, duration: dur, ease: "power2.out" }, at);
+
+      // The hero range is split for size. Both parts come from data.json's display string.
+      const rangeParts = FIG.mg90s_price.display.split(" sampai ");
+      document.querySelectorAll(".hero_range").forEach(function (el) {
+        el.innerHTML = '<span class="big">' + rangeParts[0] + '</span><span class="mid">sampai</span><span class="big">' + rangeParts[1] + "</span>";
+      });
+
+      // The counter writes its text from a tween value, so any seek gives the same frame.
+      const counterEl = document.getElementById("counter");
+      const rupiah = (n) => "Rp" + String(Math.round(n)).replace(/\B(?=(\d{3})+$)/g, ".");
+      const count = {
+        _v: 0,
+        get v() { return this._v; },
+        set v(n) { this._v = n; counterEl.textContent = rupiah(n); },
+      };
+      count.v = 0;
+
+      // The credit types out letter by letter.
+      const creditEl = document.getElementById("credit");
+      creditEl.innerHTML = creditEl.textContent.split("").map(function (c) {
+        return "<span class=\"ch\">" + (c === " " ? " " : c) + "</span>";
+      }).join("");
+
+      /* Beat 1: the arm draws, then its joint bends on "gratis". */
+      gsap.set("#forearm", { rotation: 12, svgOrigin: "380 840" });
+      draw("#arm_base", 0.3, cue("arm_base_in"));
+      fadeIn("#arm_shoulder", cue("arm_lower_in"));
+      draw("#arm_lower", 0.45, cue("arm_lower_in"));
+      fadeIn("#arm_elbow", cue("arm_forearm_in"));
+      draw("#arm_forearm", 0.45, cue("arm_forearm_in"));
+      fadeIn("#arm_wrist", cue("arm_gripper_in"));
+      draw("#arm_gripper", 0.45, cue("arm_gripper_in"));
+      rise("#hook_label", cue("hook_label_in"));
+      tl.to("#hook_servo", { color: "#DBEB42", duration: 0.2, ease: "none" }, cue("hook_servo_mark"));
+      tl.to("#forearm", { rotation: -24, duration: 1.2, ease: "power2.inOut" }, cue("arm_bend"));
+
+      /* Beat 2: the big line converges, the card rises, the credit types. */
+      enterX("#gratis_a", -1080, cue("gratis_title_in"));
+      enterX("#gratis_b", 1080, cue("gratis_title_in"));
+      rise("#arm_name", cue("arm_name_in"));
+      tl.from("#license_card", { y: 320, opacity: 0, duration: 0.45, ease: "power2.out" }, cue("license_card_in"));
+      tl.from("#gratis_rule", { scaleX: 0, duration: 0.4, ease: "power2.out" }, cue("gratis_underline"));
+      tl.from("#credit .ch", { opacity: 0, duration: 0.01, stagger: 0.042, ease: "none" }, cue("credit_type"));
+
+      /* Beat 3: each box lands when it is named, then its arrow reaches for the next. */
+      enterX("#parts_title", -1080, cue("parts_title_in"));
+      rise("#box_motor", cue("box_motor_in"));
+      fadeIn("#role_motor", cue("label_motor_in"));
+      draw("#arrow_motor path", 0.4, cue("arrow_motor_in"));
+      rise("#box_driver", cue("box_driver_in"));
+      fadeIn("#role_driver", cue("label_driver_in"));
+      draw("#arrow_driver path", 0.4, cue("arrow_driver_in"));
+      rise("#box_arduino", cue("box_arduino_in"));
+      fadeIn("#role_arduino", cue("label_arduino_in"));
+
+      /* Beat 4: the number climbs to the low price, climbs again to the high, then the plate lands. */
+      enterX("#price_question", -1080, cue("price_question_in"));
+      enterX("#mg90s_label", 1080, cue("mg90s_label_in"));
+      tl.from("#counter", { opacity: 0, duration: 0.15, ease: "none" }, cue("mg90s_label_in"));
+      tl.fromTo(count, { v: 0 }, { v: FIG.mg90s_price.value.low, duration: cue("count_low_stop") - cue("count_low"), ease: "power2.in" }, cue("count_low"));
+      tl.to(count, { v: FIG.mg90s_price.value.high, duration: cue("count_high_stop") - cue("count_high"), ease: "power2.in" }, cue("count_high"));
+
+      tl.set("#price_question, #mg90s_label, #counter", { opacity: 0 }, cue("hero_land"));
+      tl.fromTo("#plate", { opacity: 0 }, { opacity: 1, duration: 0.01, ease: "none" }, cue("hero_land"));
+      tl.fromTo("#plate", { scale: 1.08 }, { scale: 1, duration: 0.12, ease: "power4.out" }, cue("hero_land"));
+      tl.fromTo("#echo1", { y: 0, opacity: 0 }, { y: 44, opacity: 0.6, duration: 0.3, ease: "power2.out" }, cue("hero_land"));
+      tl.fromTo("#echo2", { y: 0, opacity: 0 }, { y: 88, opacity: 0.38, duration: 0.3, ease: "power2.out" }, cue("hero_land"));
+      tl.fromTo("#echo3", { y: 0, opacity: 0 }, { y: 132, opacity: 0.2, duration: 0.3, ease: "power2.out" }, cue("hero_land"));
+      tl.to(".echo", { y: 0, opacity: 0, duration: 0.7, ease: "power2.inOut" }, cue("hero_collapse"));
+
+      rise("#source_line", cue("source_line_in"));
+      enterX("#mg996r_label", 1080, cue("mg996r_label_in"));
+      rise("#mg996r_tag", cue("mg996r_tag_in"));
+      enterX("#mg996r_price", 1080, cue("mg996r_price_in"));
+
+      /* Beat 5: the honest correction, then the two open questions in pink. */
+      enterX("#honest_a", -1080, cue("honest_title_in"));
+      enterX("#honest_b", 1080, cue("honest_title_in"));
+      rise("#honest_motors", cue("honest_motors_in"));
+      rise("#honest_power", cue("honest_power_in"));
+
+      /* Beat 6: logo, then text, then contact. Everything then rests. */
+      fadeIn("#cta_logo", cue("cta_logo_in"));
+      rise("#cta_text", cue("cta_text_in"));
+      tl.to("#cta_tanya", { color: "#DBEB42", duration: 0.2, ease: "none" }, cue("cta_tanya_mark"));
+      rise("#cta_contact", cue("cta_contact_in"));
+      fadeIn("#cta_credit", cue("cta_credit_in"));
+
       window.__timelines["main"] = tl;
       tl.seek(0);
     </script>

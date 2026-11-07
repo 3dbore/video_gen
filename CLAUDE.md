@@ -54,7 +54,7 @@ All are `node tools/video.mjs <command>`:
 | `new <file>` | Creates the project and moves the brief out of the inbox |
 | `status [id]` | Shows what is done, what changed and what is next |
 | `done <id> <job>` | Runs that job's gate and records it |
-| `voice <id>` | Creates or collects the voice, then transcribes it with Parakeet |
+| `voice <id>` | Creates or collects the voice, then transcribes it with Parakeet, or Whisper for languages Parakeet doesn't cover, such as Indonesian |
 | `sfx <words> [--policy cc0-only]` | Searches the sound catalogue |
 | `stills <id>` | Runs all gates and `hyperframes check`, then renders review stills |
 | `draft <id>` | Draft render with the real mix, for a review with sound |
@@ -65,3 +65,9 @@ All are `node tools/video.mjs <command>`:
 ## Machine limits
 
 This PC has about 11 GB of RAM and no NVIDIA GPU, with limited free disk. Keep `RENDER_WORKERS` at 2 or lower. Run renders in the background. If a render dies, close other apps, set it to 1 and retry. Delete `projects/<id>/work/` when a project is finished.
+
+## Whisper
+
+Indonesian narration is transcribed with whisper.cpp, because Parakeet garbles it and drops whole sentences. It is free and runs locally. It is installed at `%LOCALAPPDATA%\whisper.cpp\whisper-cli.exe`, and the user environment variable `HYPERFRAMES_WHISPER_PATH` points to it. If a shell doesn't have that variable yet, set it for the command. To transcribe an existing voice without paying to regenerate it, run:
+
+`npx hyperframes transcribe <absolute path to voice.mp3> --engine whisper --model small --language id --dir <absolute path to voice folder>`

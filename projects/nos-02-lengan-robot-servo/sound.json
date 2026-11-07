@@ -1,0 +1,177 @@
+{
+  "voice": {
+    "file": "voice/voice.mp3",
+    "at": 0,
+    "gain_db": 0
+  },
+  "sfx": [
+    {
+      "id": "soundcn/belt-handle-2",
+      "at": "arm_bend",
+      "offset": 0,
+      "gain_db": -16,
+      "why": "Small mechanical sound as the arm joint bends"
+    },
+    {
+      "id": "soundcn/click-001",
+      "at": "license_card_in",
+      "offset": 0,
+      "gain_db": -18,
+      "why": "Soft click as the Lisensi MIT card appears"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "box_motor_in",
+      "offset": 0,
+      "gain_db": -14,
+      "why": "Tick as the Motor servo box lands"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "box_driver_in",
+      "offset": 0,
+      "gain_db": -14,
+      "why": "Tick as the Papan driver box lands"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "box_arduino_in",
+      "offset": 0,
+      "gain_db": -14,
+      "why": "Tick as the Arduino box lands"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 0,
+      "gain_db": -18,
+      "why": "Tick 1 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 0.3,
+      "gain_db": -18,
+      "why": "Tick 2 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 0.55,
+      "gain_db": -18,
+      "why": "Tick 3 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 0.77,
+      "gain_db": -18,
+      "why": "Tick 4 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 0.95,
+      "gain_db": -18,
+      "why": "Tick 5 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 1.1,
+      "gain_db": -18,
+      "why": "Tick 6 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 1.22,
+      "gain_db": -18,
+      "why": "Tick 7 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_low",
+      "offset": 1.32,
+      "gain_db": -18,
+      "why": "Tick 8 of the first 8 speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 0,
+      "gain_db": -18,
+      "why": "Tick 1 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 0.28,
+      "gain_db": -18,
+      "why": "Tick 2 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 0.52,
+      "gain_db": -18,
+      "why": "Tick 3 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 0.72,
+      "gain_db": -18,
+      "why": "Tick 4 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 0.9,
+      "gain_db": -18,
+      "why": "Tick 5 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 1.04,
+      "gain_db": -18,
+      "why": "Tick 6 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 1.16,
+      "gain_db": -18,
+      "why": "Tick 7 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 1.25,
+      "gain_db": -18,
+      "why": "Tick 8 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/tick-001",
+      "at": "count_high",
+      "offset": 1.32,
+      "gain_db": -18,
+      "why": "Tick 9 of the last 9, ending dead at the top price speeding up as the MG90S price climbs"
+    },
+    {
+      "id": "soundcn/impact-soft-heavy-002",
+      "at": "jujur_soal_harga",
+      "offset": 0,
+      "gain_db": -16,
+      "why": "One soft tone on the cut to the honest note, in the gap after the prices"
+    },
+    {
+      "id": "soundcn/power-up-2",
+      "at": "cta_logo_in",
+      "offset": -0.05,
+      "gain_db": -16,
+      "why": "Short rise as the 3D BORE logo appears"
+    }
+  ]
+}

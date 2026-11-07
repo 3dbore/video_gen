@@ -31,7 +31,7 @@ node tools/video.mjs voice <id>
 
 If the key is missing, stop and ask the person to add it to `.env`, or to accept `kokoro`. Never ask them to paste a key in chat. Regenerating with ElevenLabs costs credits again, so change the script only with a reason.
 
-The same command transcribes with `hyperframes transcribe`. It uses Parakeet when the language is covered and falls back to Whisper when it isn't.
+The same command transcribes with `hyperframes transcribe`. It uses Parakeet when the language is covered and falls back to Whisper when it isn't. Indonesian uses Whisper: see "Whisper" in `CLAUDE.md` for the install and for how to transcribe again without regenerating the voice, which would cost credits.
 
 ## Check the transcript
 

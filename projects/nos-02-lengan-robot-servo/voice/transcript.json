@@ -1,0 +1,524 @@
+[
+  {
+    "text": "Lenggan",
+    "start": 0.08,
+    "end": 0.54,
+    "id": "w0"
+  },
+  {
+    "text": "robot",
+    "start": 0.54,
+    "end": 0.94,
+    "id": "w1"
+  },
+  {
+    "text": "ini",
+    "start": 0.94,
+    "end": 1.18,
+    "id": "w2"
+  },
+  {
+    "text": "pakai",
+    "start": 1.18,
+    "end": 1.58,
+    "id": "w3"
+  },
+  {
+    "text": "motor",
+    "start": 1.58,
+    "end": 1.95,
+    "id": "w4"
+  },
+  {
+    "text": "servo",
+    "start": 2.02,
+    "end": 2.34,
+    "id": "w5"
+  },
+  {
+    "text": "biasa.",
+    "start": 2.37,
+    "end": 2.96,
+    "id": "w6"
+  },
+  {
+    "text": "Desainnya",
+    "start": 3.08,
+    "end": 3.66,
+    "id": "w7"
+  },
+  {
+    "text": "gratis,",
+    "start": 3.78,
+    "end": 4.4,
+    "id": "w8"
+  },
+  {
+    "text": "open",
+    "start": 4.4,
+    "end": 4.74,
+    "id": "w9"
+  },
+  {
+    "text": "source,",
+    "start": 4.74,
+    "end": 5.51,
+    "id": "w10"
+  },
+  {
+    "text": "namanya",
+    "start": 5.51,
+    "end": 6.24,
+    "id": "w11"
+  },
+  {
+    "text": "compact",
+    "start": 6.24,
+    "end": 6.97,
+    "id": "w12"
+  },
+  {
+    "text": "robotic",
+    "start": 6.97,
+    "end": 7.69,
+    "id": "w13"
+  },
+  {
+    "text": "arm.",
+    "start": 7.69,
+    "end": 8.06,
+    "id": "w14"
+  },
+  {
+    "text": "Desainnya",
+    "start": 8.18,
+    "end": 8.66,
+    "id": "w15"
+  },
+  {
+    "text": "dibagikan",
+    "start": 8.66,
+    "end": 9.26,
+    "id": "w16"
+  },
+  {
+    "text": "gratis,",
+    "start": 9.26,
+    "end": 9.85,
+    "id": "w17"
+  },
+  {
+    "text": "jadi",
+    "start": 9.86,
+    "end": 10.31,
+    "id": "w18"
+  },
+  {
+    "text": "boleh",
+    "start": 10.31,
+    "end": 10.72,
+    "id": "w19"
+  },
+  {
+    "text": "kamu",
+    "start": 11.17,
+    "end": 11.32,
+    "id": "w20"
+  },
+  {
+    "text": "pakai",
+    "start": 11.33,
+    "end": 11.84,
+    "id": "w21"
+  },
+  {
+    "text": "dan",
+    "start": 11.98,
+    "end": 12.21,
+    "id": "w22"
+  },
+  {
+    "text": "ubah.",
+    "start": 12.21,
+    "end": 12.68,
+    "id": "w23"
+  },
+  {
+    "text": "Isinya",
+    "start": 12.8,
+    "end": 13.21,
+    "id": "w24"
+  },
+  {
+    "text": "cuma",
+    "start": 13.21,
+    "end": 13.57,
+    "id": "w25"
+  },
+  {
+    "text": "tiga",
+    "start": 13.57,
+    "end": 13.9,
+    "id": "w26"
+  },
+  {
+    "text": "bagian,",
+    "start": 13.98,
+    "end": 14.63,
+    "id": "w27"
+  },
+  {
+    "text": "motor",
+    "start": 14.7,
+    "end": 15.02,
+    "id": "w28"
+  },
+  {
+    "text": "servo",
+    "start": 15.05,
+    "end": 15.36,
+    "id": "w29"
+  },
+  {
+    "text": "yang",
+    "start": 15.36,
+    "end": 15.8,
+    "id": "w30"
+  },
+  {
+    "text": "menggerakan",
+    "start": 15.8,
+    "end": 16.64,
+    "id": "w31"
+  },
+  {
+    "text": "sendi,",
+    "start": 16.64,
+    "end": 17.08,
+    "id": "w32"
+  },
+  {
+    "text": "papan",
+    "start": 17.16,
+    "end": 17.48,
+    "id": "w33"
+  },
+  {
+    "text": "driver",
+    "start": 17.48,
+    "end": 17.96,
+    "id": "w34"
+  },
+  {
+    "text": "yang",
+    "start": 17.96,
+    "end": 18.28,
+    "id": "w35"
+  },
+  {
+    "text": "mengatur",
+    "start": 18.28,
+    "end": 18.91,
+    "id": "w36"
+  },
+  {
+    "text": "motornya,",
+    "start": 18.93,
+    "end": 19.75,
+    "id": "w37"
+  },
+  {
+    "text": "dan",
+    "start": 19.75,
+    "end": 20.2,
+    "id": "w38"
+  },
+  {
+    "text": "Arduino",
+    "start": 20.2,
+    "end": 20.68,
+    "id": "w39"
+  },
+  {
+    "text": "sebagai",
+    "start": 20.68,
+    "end": 21.27,
+    "id": "w40"
+  },
+  {
+    "text": "otaknya.",
+    "start": 21.46,
+    "end": 22.18,
+    "id": "w41"
+  },
+  {
+    "text": "Berapa",
+    "start": 22.34,
+    "end": 22.66,
+    "id": "w42"
+  },
+  {
+    "text": "harga",
+    "start": 22.66,
+    "end": 22.92,
+    "id": "w43"
+  },
+  {
+    "text": "motornya?",
+    "start": 23.03,
+    "end": 23.85,
+    "id": "w44"
+  },
+  {
+    "text": "Satu",
+    "start": 24,
+    "end": 24.24,
+    "id": "w45"
+  },
+  {
+    "text": "servo",
+    "start": 24.24,
+    "end": 24.69,
+    "id": "w46"
+  },
+  {
+    "text": "MG90S,",
+    "start": 24.7,
+    "end": 25.68,
+    "id": "w47"
+  },
+  {
+    "text": "sekitar",
+    "start": 25.69,
+    "end": 26.32,
+    "id": "w48"
+  },
+  {
+    "text": "Rp",
+    "start": 26.32,
+    "end": 26.5,
+    "id": "w49"
+  },
+  {
+    "text": "22.000",
+    "start": 26.5,
+    "end": 28.06,
+    "id": "w50"
+  },
+  {
+    "text": "sampai",
+    "start": 28.26,
+    "end": 28.69,
+    "id": "w51"
+  },
+  {
+    "text": "Rp",
+    "start": 28.69,
+    "end": 28.87,
+    "id": "w52"
+  },
+  {
+    "text": "72.000.",
+    "start": 28.87,
+    "end": 30.87,
+    "id": "w53"
+  },
+  {
+    "text": "Servo",
+    "start": 31,
+    "end": 31.39,
+    "id": "w54"
+  },
+  {
+    "text": "MG996R",
+    "start": 31.39,
+    "end": 32.6,
+    "id": "w55"
+  },
+  {
+    "text": "yang",
+    "start": 32.6,
+    "end": 33.01,
+    "id": "w56"
+  },
+  {
+    "text": "lebih",
+    "start": 33.01,
+    "end": 33.52,
+    "id": "w57"
+  },
+  {
+    "text": "kuat,",
+    "start": 33.52,
+    "end": 34.18,
+    "id": "w58"
+  },
+  {
+    "text": "sekitar",
+    "start": 34.18,
+    "end": 34.65,
+    "id": "w59"
+  },
+  {
+    "text": "Rp",
+    "start": 34.65,
+    "end": 34.77,
+    "id": "w60"
+  },
+  {
+    "text": "53.000",
+    "start": 34.8,
+    "end": 35.97,
+    "id": "w61"
+  },
+  {
+    "text": "sampai",
+    "start": 36.37,
+    "end": 36.41,
+    "id": "w62"
+  },
+  {
+    "text": "Rp",
+    "start": 36.41,
+    "end": 36.53,
+    "id": "w63"
+  },
+  {
+    "text": "78.000.",
+    "start": 36.53,
+    "end": 37.85,
+    "id": "w64"
+  },
+  {
+    "text": "Harga",
+    "start": 38,
+    "end": 38.31,
+    "id": "w65"
+  },
+  {
+    "text": "ini",
+    "start": 38.31,
+    "end": 38.57,
+    "id": "w66"
+  },
+  {
+    "text": "baru",
+    "start": 38.57,
+    "end": 38.91,
+    "id": "w67"
+  },
+  {
+    "text": "motornya.",
+    "start": 38.91,
+    "end": 39.83,
+    "id": "w68"
+  },
+  {
+    "text": "Jumlah",
+    "start": 39.96,
+    "end": 40.36,
+    "id": "w69"
+  },
+  {
+    "text": "motor",
+    "start": 40.36,
+    "end": 40.76,
+    "id": "w70"
+  },
+  {
+    "text": "dan",
+    "start": 40.76,
+    "end": 41,
+    "id": "w71"
+  },
+  {
+    "text": "powersupply",
+    "start": 41,
+    "end": 41.83,
+    "id": "w72"
+  },
+  {
+    "text": "masih",
+    "start": 41.9,
+    "end": 42.27,
+    "id": "w73"
+  },
+  {
+    "text": "kami",
+    "start": 42.27,
+    "end": 42.55,
+    "id": "w74"
+  },
+  {
+    "text": "cek.",
+    "start": 42.68,
+    "end": 42.88,
+    "id": "w75"
+  },
+  {
+    "text": "Mau",
+    "start": 43,
+    "end": 43.1,
+    "id": "w76"
+  },
+  {
+    "text": "print",
+    "start": 43.1,
+    "end": 43.46,
+    "id": "w77"
+  },
+  {
+    "text": "partnya?",
+    "start": 43.46,
+    "end": 44.2,
+    "id": "w78"
+  },
+  {
+    "text": "Tanya",
+    "start": 44.28,
+    "end": 44.62,
+    "id": "w79"
+  },
+  {
+    "text": "3D",
+    "start": 44.62,
+    "end": 44.9,
+    "id": "w80"
+  },
+  {
+    "text": "Borre",
+    "start": 45.02,
+    "end": 45.39,
+    "id": "w81"
+  },
+  {
+    "text": "lewat",
+    "start": 45.39,
+    "end": 45.82,
+    "id": "w82"
+  },
+  {
+    "text": "WhatsApp",
+    "start": 45.82,
+    "end": 46.51,
+    "id": "w83"
+  },
+  {
+    "text": "atau",
+    "start": 46.51,
+    "end": 46.86,
+    "id": "w84"
+  },
+  {
+    "text": "DM",
+    "start": 46.86,
+    "end": 46.88,
+    "id": "w85"
+  },
+  {
+    "text": "Instagram.",
+    "start": 47.32,
+    "end": 47.88,
+    "id": "w86"
+  }
+]
