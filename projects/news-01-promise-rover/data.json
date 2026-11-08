@@ -1,0 +1,47 @@
+{
+  "hero": "launch_target",
+  "figures": [
+    {
+      "id": "drill_depth",
+      "value": 1,
+      "unit": "m",
+      "display": "1 m",
+      "label": "kedalaman bor PROMISE, sampai sekitar satu meter di bawah permukaan Bulan",
+      "caveat": "NASA says 'up to' 1 m (3.3 ft), sampled in 10 cm steps. It is a design capability, not a measured result.",
+      "source": {
+        "title": "NASA, halaman misi PROMISE (diperbarui 7 Nov 2026)",
+        "url": "https://www.nasa.gov/mission/promise/",
+        "accessed": "2026-11-08",
+        "quote": "from up to 3.3 feet (1 meter) below the surface"
+      }
+    },
+    {
+      "id": "mission_months",
+      "value": 18,
+      "unit": "months",
+      "display": "18 bulan",
+      "label": "lama misi utama PROMISE yang direncanakan",
+      "caveat": "Planned primary mission length, not a flown result.",
+      "source": {
+        "title": "NASA, halaman misi PROMISE (diperbarui 7 Nov 2026)",
+        "url": "https://www.nasa.gov/mission/promise/",
+        "accessed": "2026-11-08",
+        "quote": "a late 2028 launch and an 18-month primary mission"
+      }
+    },
+    {
+      "id": "launch_target",
+      "value": "late 2028",
+      "unit": "date",
+      "display": "Akhir 2028",
+      "label": "target peluncuran PROMISE (target, bukan jadwal pasti)",
+      "caveat": "NASA lists PROMISE as a Future Mission. Secondary reporting says it is still under study and NASA has no approved cost baseline.",
+      "source": {
+        "title": "NASA, halaman misi PROMISE (diperbarui 7 Nov 2026)",
+        "url": "https://www.nasa.gov/mission/promise/",
+        "accessed": "2026-11-08",
+        "quote": "will deliver the PROMISE vehicle for a late 2028 launch"
+      }
+    }
+  ]
+}

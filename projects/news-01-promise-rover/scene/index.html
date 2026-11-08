@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>NEWS-01: PROMISE, rover Bulan dari suku cadang rover Mars</title>
+    <script src="gsap.min.js"></script>
+    <script src="timing.js"></script>
+    <script src="data.js"></script>
+    <style>
+      /* Scaffold only. The motion job replaces this look with the one in spec.md. */
+      :root {
+        --ground: #101114;
+        --ink: #f4f2ec;
+        --accent: #ffb000;
+        --font-display: "Segoe UI", Arial, sans-serif;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ground);
+      }
+      #root { position: relative; width: 100%; height: 100%; font-family: var(--font-display); color: var(--ink); }
+      .clip { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--ground); }
+      .title { font-size: 96px; font-weight: 700; letter-spacing: -0.03em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="55" data-width="1080" data-height="1920">
+      <section id="hook" class="clip" data-scene="hook"><h1 class="title">Hook</h1></section>
+      <section id="namanya_promise" class="clip" data-scene="namanya_promise"><h1 class="title">Namanya PROMISE</h1></section>
+      <section id="dari_mars" class="clip" data-scene="dari_mars"><h1 class="title">Dari Mars</h1></section>
+      <section id="tenaga_nuklir" class="clip" data-scene="tenaga_nuklir"><h1 class="title">Tenaga nuklir</h1></section>
+      <section id="isinya" class="clip" data-scene="isinya"><h1 class="title">Isinya</h1></section>
+      <section id="uji_teknologi" class="clip" data-scene="uji_teknologi"><h1 class="title">Uji teknologi</h1></section>
+      <section id="jadwal" class="clip" data-scene="jadwal"><h1 class="title">Jadwal</h1></section>
+      <section id="penutup" class="clip" data-scene="penutup"><h1 class="title">Penutup</h1></section>
+    </div>
+    <script src="runtime.js"></script>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      // Every position is cue("name") from timing.js. Never write a bare number here.
+      tl.from("#hook .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("hook_in"));
+      tl.from("#namanya_promise .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("namanya_promise_in"));
+      tl.from("#dari_mars .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("dari_mars_in"));
+      tl.from("#tenaga_nuklir .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("tenaga_nuklir_in"));
+      tl.from("#isinya .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("isinya_in"));
+      tl.from("#uji_teknologi .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("uji_teknologi_in"));
+      tl.from("#jadwal .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("jadwal_in"));
+      tl.from("#penutup .title", { opacity: 0, y: 30, duration: 0.4, ease: "power3.out" }, cue("penutup_in"));
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

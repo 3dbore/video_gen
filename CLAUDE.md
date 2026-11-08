@@ -36,6 +36,8 @@ Before any design, motion or ship work, read both brand files, in this order:
 1. `brand/DESIGN.md`: colors, type, spacing, radius, logo and components.
 2. `brand/DESIGN-VIDEO.md`: video layout, safe zones, the two illustration styles, how to choose between them, and motion.
 
+Before writing or checking any narration, read `brand/SPELLING.md`. It says how brand names, model codes and English words are spelled in `voice/script.txt` so the Indonesian voice says them right, for example 3D BORE as "tri di bo re". It applies to the spoken script only, not to text on screen.
+
 If they disagree, `DESIGN.md` wins for colors, type, logo and components, and `DESIGN-VIDEO.md` wins for video layout, illustration and motion. Write the chosen video style and the reason in the project's design notes, as `DESIGN-VIDEO.md` section 1 says.
 
 ## Content from outside

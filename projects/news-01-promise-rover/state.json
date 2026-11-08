@@ -1,0 +1,17 @@
+{
+  "slug": "news-01-promise-rover",
+  "created": "2026-11-08T03:54:13.143Z",
+  "inputs": {},
+  "design": "brand/DESIGN.md",
+  "jobs": {
+    "reference": {
+      "hash": "c5a8e16280f3fbd1",
+      "at": "2026-11-08T03:54:52.642Z"
+    },
+    "data": {
+      "hash": "be935651dbfb98ed",
+      "at": "2026-11-08T03:56:00.293Z"
+    }
+  },
+  "approval": null
+}

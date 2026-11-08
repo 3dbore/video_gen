@@ -19,4 +19,6 @@ brand:
 
 Don't save design files in `briefs/inbox/`, because `/video` treats every Markdown file there as a brief.
 
+`brand/SPELLING.md` holds how names and English words are spelled in narration scripts so the Indonesian voice pronounces them right. The voice job reads it for every film. It isn't copied into projects, so a change applies to the next voice you generate.
+
 With no file here and no `brand.design` in the brief, films use the house look from `/video-design`.

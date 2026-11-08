@@ -12,6 +12,7 @@ Skip this job if `voice.mode: none`.
 
 For `tts`, write `projects/<id>/voice/script.txt`: only the words to be spoken, with no labels or plain-word stage directions. With ElevenLabs, audio tags such as `[whispers]` are allowed, because they aren't spoken.
 
+- Read `brand/SPELLING.md` first and spell every brand name, model code and English word in the script the way it says, such as "tri di bo re" for 3D BORE. Leave out the words it says to leave out.
 - Start from the VO lines in the brief, in the order set by `story.md`.
 - Every number said must match `data.json`. Write it the way it should sound in the brief's `language` ("ninety percent").
 - At about 2.5 words per second it has to fit in the film. If it doesn't, cut words. Don't speed up the voice.
@@ -39,6 +40,7 @@ Read `voice/transcript.json` and compare it with the script:
 
 - **Numbers:** does a spoken figure match `data.json`? For a `provided` voice, this is your only check, so report any mismatch to the person.
 - **Pace:** does the voice's length fit the film? If it's longer than the film, tell the person. Don't speed it up silently.
+- **Spelling:** did the words in `brand/SPELLING.md` come out as spelled? If one sounds wrong, tell the person, and once they confirm a better spelling, add it to that file.
 - **Tags:** do any tag words appear in the transcript? ElevenLabs sometimes speaks a tag aloud. Tell the person, and ask before regenerating, because it uses credits.
 
 Keep the word start times. The motion job turns them into cues so that things land on the words that name them.
