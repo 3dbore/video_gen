@@ -137,7 +137,7 @@ MOTION: How it moves, in plain words.
 SOUND: What it sounds like, in plain words.
 ```
 
-Each beat needs `VO:` or `ON SCREEN:`. Beats must be numbered in order. If the lengths don't add up to `duration_s`, they are scaled to fit and you get a warning.
+Each beat needs `VO:` or `ON SCREEN:`. Beats must be numbered in order. If a beat is a mathematical idea changing (a derivation, a coordinate change, a vector or function), start its `ON SCREEN:` line with `[math]`. Claude makes that beat with Manim instead of the usual HyperFrames graphics. Describe what the viewer sees, as always, such as `[math] The satellite's position vector turns into azimuth and elevation`. If the lengths don't add up to `duration_s`, they are scaled to fit and you get a warning.
 
 A brief can have any number of beats. The story job still reduces the argument to three story beats, so a brief with six scenes needs a clear shape.
 

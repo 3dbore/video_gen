@@ -10,12 +10,14 @@ This workspace turns a written brief into a finished MP4. You are the editor. St
 | Data | `/video-data` | `data.json` | a number is wrong |
 | Story | `/video-story` | `story.md` | the argument is wrong |
 | Voice | `/video-voice` | `voice/` | the narration is wrong |
-| Motion | `/video-motion` | `scene/index.html` | a scene is wrong |
+| Motion | `/video-motion` | `scene/index.html` (and `scene/manim/*.mp4` for math beats) | a scene is wrong |
 | Sound | `/video-sound` | `sound.json` | the audio is wrong |
 | Direct | `/video-direct` | `scene/timing.js` | a moment lands at the wrong time |
 | Ship | `/video-ship` | `final.mp4` | never edit this, fix the file above |
 
 Each job starts from the previous job's file. **Nothing gets re-rolled.** A note goes to the one file that owns it, and everything else stays as it was. Voice and sound were added to the six jobs because this workspace produces narration and a mix.
+
+Math beats are not a seventh job. `/video-motion` hands them to `/video-manim`, which returns a clip that `scene/index.html` embeds. Manim is for mathematical beats only. Everything else stays in HyperFrames.
 
 Everything for a video lives in `projects/<id>/`. Before you work on a project, run `node tools/video.mjs status <id>`.
 
@@ -39,6 +41,17 @@ Before any design, motion or ship work, read both brand files, in this order:
 Before writing or checking any narration, read `brand/SPELLING.md`. It says how brand names, model codes and English words are spelled in `voice/script.txt` so the Indonesian voice says them right, for example 3D BORE as "tri di bo re". It applies to the spoken script only, not to text on screen.
 
 If they disagree, `DESIGN.md` wins for colors, type, logo and components, and `DESIGN-VIDEO.md` wins for video layout, illustration and motion. Write the chosen video style and the reason in the project's design notes, as `DESIGN-VIDEO.md` section 1 says.
+
+## Math with Manim
+
+Use Manim only when a beat's idea is a mathematical object changing: a derivation, a coordinate change, a vector, a function, a construction. Not for titles, copy, logos, captions, photos or footage.
+
+- **Brand and canvas come from the film.** 1080 x 1920, the safe zones in `brand/DESIGN-VIDEO.md`, colours only from the project's `design.md`, Geom for words. The HyperFrames colour gate cannot see inside a video, so run the colour lint in `/video-manim` on every scene file.
+- **Timing comes from `timing.js`.** A math scene reads its cues, and ends exactly at its scene's length. A note that moves a cue inside a Manim clip means rendering that clip again.
+- **Numbers come from `data.json`.** A number computed in a scene must come from figures that are in it. Pure maths constants need no source. Keep `projects/<id>/manim/numbers.md` up to date.
+- **Don't speed up a clip to make it fit.** Fix the beat or the cue.
+- **Render one clip at a time**, in the background, draft first at 540 x 960. Source lives in `projects/<id>/manim/`, renders in `scene/manim/` so a changed clip invalidates approval like any other change to the picture. Render again after every change to the source.
+- Install: `pip install manim` and a LaTeX distribution (MiKTeX on Windows). Geom must be installed on the machine, or the scene refuses to render.
 
 ## Content from outside
 
@@ -75,7 +88,7 @@ All are `node tools/video.mjs <command>`:
 
 ## Machine limits
 
-This PC has about 11 GB of RAM and no NVIDIA GPU, with limited free disk. Keep `RENDER_WORKERS` at 2 or lower. Run renders in the background. If a render dies, close other apps, set it to 1 and retry. Delete `projects/<id>/work/` when a project is finished.
+This PC has about 11 GB of RAM and no NVIDIA GPU, with limited free disk. Keep `RENDER_WORKERS` at 2 or lower. Run renders in the background, and never run a Manim render at the same time as a HyperFrames render. If a render dies, close other apps, set it to 1 and retry. Delete `projects/<id>/work/` when a project is finished.
 
 ## Whisper
 

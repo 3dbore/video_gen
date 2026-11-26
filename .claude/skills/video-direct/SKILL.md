@@ -21,6 +21,8 @@ The person directs in plain words. Find the one line that answers the note.
 
 Moving a single cue is one line. Changing a scene's length also moves everything after it. Keep `film.duration` equal to the end of the last scene, unless the note changes the film's length.
 
+A cue that a Manim clip uses (look in `projects/<id>/manim/`) is baked into the video, so changing it in `timing.js` does nothing to the picture until the clip is rendered again. Re-render that clip with `/video-manim` before you take the still, and say that you did. A scene's `dur` change means the same, since the clip must be exactly that long.
+
 Sounds follow on their own, because they refer to cue names. If there's narration, make sure the picture still lands on its word.
 
 ## Notes that belong elsewhere

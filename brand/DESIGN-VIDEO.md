@@ -4,7 +4,7 @@ version: 1.0
 description: Rules for 3D BORE reels and animated video. Two approved illustration styles and a guide for choosing between them from the script.
 extends: claude/DESIGN.md (colors, type, spacing, radius, logo and components come from there)
 source: Figma file 3DBORE, page "Brand Guidelines", section "BSG Video Style Board"
-status: Illustration as a video device approved by the owner, 8 Nov 2026
+status: Illustration as a video device approved by the owner, 8 Nov 2026. Section 3.3 (math layer) is proposed and needs the owner's yes.
 canvas: { width: 1080, height: 1920, ratio: "9:16" }
 safe-zone: { top: 220, bottom: 380 }
 styles:
@@ -68,6 +68,27 @@ Figma source: Brand Guidelines page, section **"BSG Video Style Board"**. Duplic
 - **Fields:** Cobalt 500, Navy 500 (Dark mode) or Cobalt 50 (surface/subtle). One field per scene.
 - **Motion:** slow push-in from 100 to 108% across the shot, plus one secondary move (a hand turns in, a needle ticks, a nozzle glides). Grain never animates. Cut every 2 to 3 s.
 
+### 3.3 Math layer (proposed, needs owner approval)
+
+**Feels:** exact, calm, derived step by step. Shows a mathematical idea changing: an equation being derived, a point moving between coordinate systems, a function being drawn, a construction.
+
+**What it is:** a layer inside a Style A film, made with Manim and used only for beats whose idea is mathematical. It is not a third style and not a second graphic device. It speaks Style A's language so it looks like part of the same film.
+
+**Looks like:** flat geometry on a field, with Style A's line, shadow, colour and grid rules (3.1). Isometric only when the idea is genuinely 3D.
+
+- **Line:** 3 px Navy 500 outline (White on Navy and Cobalt fields), 5 px for the element in focus, 1 px grid.
+- **Shadow:** hard 10 px, no blur, as 3.1. Only on solid objects, not on axes, curves or equations.
+- **Color:** Chartreuse only on the element that moves or matters in this beat. Blush only as one small spark. Earlier elements dim to 15 to 30% opacity when focus moves on. Only colours in `design.md`.
+- **Fields:** the scene's own field (White, Cobalt, Navy in Dark mode or Chartreuse), baked into the clip so no seam shows against the HTML field.
+- **Type:** Geom for words and labels, sentence case, 28 px or larger. Equations are set in LaTeX, which has no Geom, so they use one agreed math font. The owner confirms it.
+- **Layout:** the clip fills the canvas but its content stays inside the safe zones and 64 px side margins. With a copy block it uses the stage above it, 952 x 920 px (y 220 to 1140). When the math owns the whole scene, the copy block is dropped and the stage grows to 952 x 1320 px. The clip draws no logo, eyebrow, progress bar or scene number.
+- **Motion:** one moving element at a time and one idea per scene, as section 2. Connected mathematical ideas change by transform or by moving the camera or frame, not by cutting. Cut at scene changes only, to the beat set in `spec.md`.
+- **Proof:** a derivation shows the maths, never a test result. A test, a measurement or a customer's part is still filmed.
+- **Numbers:** every number comes from `data.json` or is computed from figures that do.
+- **With Style B:** do not use it in a Grain editorial reel unless the owner approves, and then write the exception in the design notes.
+
+Craft rules, helpers and the render workflow are in `.claude/skills/video-manim/`.
+
 ## 4. Choosing a style
 
 Choose by what the script is mainly **doing**, not by its topic.
@@ -80,6 +101,7 @@ Choose by what the script is mainly **doing**, not by its topic.
 | Makes one promise, claim or feeling | one number (lead time, price), "kamu", a result, an announcement, a hook question | **B** |
 | Tells a human story | a customer, a maker, hands, a broken item fixed, a testimonial, a "finally works" moment | **B** |
 | Opens or closes a video (intro, bumper, end card) | brand line, CTA only | Same style as the rest of the video |
+| Shows a mathematical idea changing: a derivation, a coordinate change, a vector or function, a construction | equations, "rumus", axes, angles, matrices, conversions | **A**, with the math layer (3.3) for those beats |
 
 **Tie-breakers, in order:**
 1. **Objects on screen at once.** Three or more objects that must relate to each other: A. One or two: B.
@@ -121,6 +143,7 @@ Each template has a motion note under the frame with timing and moves.
 - [ ] Style B: no outlines, grain on shapes and field, grain not animated.
 - [ ] No sample copy left; unverified facts use placeholders.
 - [ ] Real footage used wherever the script needs proof.
+- [ ] Math beats (3.3): the clip's colours pass the lint, content stays inside the safe zones at every mid-transition frame, and every shown number is in `numbers.md` with its source.
 
 ## 7. Never
 
@@ -129,3 +152,6 @@ Each template has a motion note under the frame with timing and moves.
 - Never use Blush as a field, or Chartreuse text on a white field.
 - Never use an illustration in place of a real test, measurement or customer part.
 - Never animate grain.
+- Never make titles, copy, logos, captions, photos or footage in Manim. It is for mathematical beats only.
+- Never use a Manim default or named colour, or a colour that is not in `design.md`.
+- Never put a mathematical derivation in place of a real test, measurement or customer part.

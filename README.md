@@ -16,7 +16,7 @@ cp .env.example .env
 npm run doctor
 ```
 
-The machine needs Node 22+, FFmpeg and yt-dlp. Add `ELEVENLABS_API_KEY` to `.env` if you want ElevenLabs narration.
+The machine needs Node 22+, FFmpeg and yt-dlp. Films with mathematical beats also need Python 3.10+, `pip install manim` and a LaTeX distribution. Add `ELEVENLABS_API_KEY` to `.env` if you want ElevenLabs narration.
 
 ## Making a video
 
@@ -40,7 +40,7 @@ The machine needs Node 22+, FFmpeg and yt-dlp. Add `ELEVENLABS_API_KEY` to `.env
 | `assets/sfx/` | 770 sound effects and `catalog.json`, with a licence per sound |
 | `templates/scene/` | The starting HyperFrames composition |
 | `tools/` | The CLI behind the skills |
-| `.claude/skills/` | The pipeline skills and motion/video design skills |
+| `.claude/skills/` | The pipeline skills, motion/video design skills and `video-manim` for math beats |
 | `docs/SKILLS_LIBRARY.md` | Where to find more skills |
 | `docs/workflow.html` | The workflow on one page. Run `node tools/video.mjs checklist` to use it as a live checklist of your files |
 
@@ -50,6 +50,7 @@ The machine needs Node 22+, FFmpeg and yt-dlp. Add `ELEVENLABS_API_KEY` to `.env
 |---|---|
 | Editor | Claude Code |
 | Picture | HyperFrames (HTML and GSAP to video, Apache-2.0) |
+| Math animation | Manim Community (MIT), only for mathematical beats, through `/video-manim` |
 | Audio mix and mux | FFmpeg |
 | Speech to text | Parakeet, through HyperFrames |
 | Voice | ElevenLabs, local Kokoro, or your own recording |

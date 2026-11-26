@@ -12,6 +12,7 @@ Read `spec.md`, `story.md`, `data.json`, `brief.md`, and `voice/transcript.json`
 - `/motion-design` for timing, easing and choreography
 - `/hyperframes` for the composition contract. It wins on anything about how HyperFrames works
 - `/hyperframes-registry` before hand-building a named effect, such as a chart, a transition or kinetic type
+- `/video-manim` for any beat whose idea is a mathematical object changing (see "Math beats" below). Nothing else uses Manim
 
 `new` already scaffolded the composition from the brief's beats. Replace the placeholder look. Keep the wiring.
 
@@ -43,6 +44,16 @@ Read `spec.md`, `story.md`, `data.json`, `brief.md`, and `voice/transcript.json`
 - **Deterministic:** no `Date.now()`, unseeded `Math.random()`, network requests or CSS animations that aren't driven by the timeline.
 - **Colours:** with a `design.md`, every colour in the scene's code must be in it, or the gate fails. Transparency is fine, and "#FFB000 at 40%" counts as `#FFB000`. A scene can use `design.md` colours only. To allow another one, ask the person, then add it to this project's `design.md`, not `brand/DESIGN.md`.
 - **Local assets:** put fonts and images in `scene/`. Use `@font-face` with a local file, or a font that's on the system.
+
+## Math beats
+
+Most scenes are HyperFrames only. A beat that is a derivation, a vector or point moving between coordinate systems, a function being drawn or a geometric construction goes to `/video-manim`, which returns a finished clip, `scene/manim/<scene>.mp4`. You still own `scene/index.html`:
+
+- Name the Manim beats, and why, under `## Look` in `spec.md`.
+- Add the clip as a `<video>` with `data-scene="<scene id>"`, `muted playsinline`, covering the canvas, below the logo, copy block and progress bar. `runtime.js` gives it the scene's start and length from `timing.js`.
+- A clip's inner steps are cues in `timing.js`, so `/video-direct` can move them. Moving one means the clip must be rendered again.
+- The colour gate cannot see inside a video, so `/video-manim` runs its own colour lint. Look at the clip's stills yourself.
+- Titles, copy, logo, captions, photos, footage and the end card are never made in Manim.
 
 ## timing.js
 
